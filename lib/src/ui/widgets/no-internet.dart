@@ -1,0 +1,33 @@
+import 'package:flutter/material.dart';
+
+class NoInternetScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+          padding: EdgeInsets.all(30.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(bottom: 20),
+                child: Image.asset(
+                  "assets/no-internet.png",
+                  width: 250,
+                ),
+              ),
+              Text(
+                "Que triste! Parece que você está sem conexão.",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
+                  color: Color(0xFF00BFB2),
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          )),
+    );
+  }
+}

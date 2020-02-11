@@ -1,0 +1,174 @@
+name: swappin
+description: Aplicativo de Varejo baseado em Geolocalização
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.2
+  firebase_auth: ^0.15.3+1
+  firebase_core: ^0.4.3+2
+  firebase_database: ^3.0.7
+  firebase_storage: ^3.1.1
+  firebase_dynamic_links: ^0.3.0
+  cloud_firestore: ^0.13.0+1
+  google_sign_in: ^4.1.1
+  flutter_facebook_login: ^3.0.0
+  image_picker: ^0.6.3+1
+  flutter_swiper: ^1.1.6
+  rxdart: ^0.22.3
+  location: ^2.3.5
+  latlong: ^0.6.1
+  transformer_page_view: ^0.1.6
+  diacritic: ^0.1.1
+  autocomplete_textfield: ^1.7.3
+  badges: ^1.1.0
+  http: any
+  google_maps_flutter: ^0.5.21+15
+  flutter_polyline_points: ^0.1.0
+  shared_preferences: ^0.5.6
+  intl: ^0.16.1
+  flare_flutter: ^2.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_launcher_icons: ^0.7.3
+
+flutter_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  ios: true
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+   - assets/background.jpg
+   - assets/logo.png
+   - assets/logo-white.png
+   - assets/logo_vertical.png
+   - assets/icon/icon.png
+   - assets/logo-appbar.png
+   - assets/profile.png
+   - assets/search.png
+   - assets/food-category.jpg
+   - assets/fashion-category.jpg
+   - assets/comida-brasileira.jpg
+   - assets/churrasco.jpg
+   - assets/comida-japonesa.jpg
+   - assets/comida-chinesa.jpg
+   - assets/lanches.jpg
+   - assets/pizzas.jpg
+   - assets/facebook.png
+   - assets/google.png
+   - assets/no-stores.png
+   - assets/no-internet.png
+   - assets/no-products.png
+   - assets/map_style.txt
+
+   # Icons Black
+   - assets/icons/black/arrow_left_1.png
+   - assets/icons/black/arrow_left_2.png
+   - assets/icons/black/arrow_repeat.png
+   - assets/icons/black/bag.png
+   - assets/icons/black/calendar.png
+   - assets/icons/black/camera_1.png
+   - assets/icons/black/camera_2.png
+   - assets/icons/black/clock.png
+   - assets/icons/black/delete.png
+   - assets/icons/black/home.png
+   - assets/icons/black/love_1.png
+   - assets/icons/black/love_2.png
+   - assets/icons/black/message.png
+   - assets/icons/black/notification.png
+   - assets/icons/black/pin_rounded_circle.png
+   - assets/icons/black/pin_sharp_circle.png
+   - assets/icons/black/plus.png
+   - assets/icons/black/profile.png
+   - assets/icons/black/search.png
+   - assets/icons/black/star_favorite_1.png
+   - assets/icons/black/star_favorite_2.png
+   - assets/icons/black/email.png
+   - assets/icons/black/password.png
+   - assets/icons/black/filter.png
+   - assets/icons/black/files.png
+   - assets/icons/black/gallery.png
+   - assets/icons/black/terms.png
+   - assets/icons/black/policy.png
+   - assets/icons/black/settings.png
+
+   # Icons Gradient
+   - assets/icons/gradient/bag.png
+   - assets/icons/gradient/clock.png
+   - assets/icons/gradient/home.png
+   - assets/icons/gradient/home_rounded.png
+   - assets/icons/gradient/pin.png
+   - assets/icons/gradient/pin_rounded.png
+
+   # Icons White
+   - assets/icons/white/arrow_left_1.png
+   - assets/icons/white/profile.png
+   - assets/icons/white/search.png
+
+   # Animations
+   - assets/animations/SwappinIntro.flr
+   - assets/animations/Tutorial.flr
+   - assets/animations/SwappinIntro2.flr
+   - assets/animations/SwappinLoading.flr
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: fonts/Poppins-Regular.ttf
+        - asset: fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: fonts/Poppins-Bold.ttf
+          weight: 700
+    - family: Quicksand
+      fonts:
+        - asset: fonts/Quicksand-Regular.ttf
+        - asset: fonts/Quicksand-Bold.ttf
+          weight: 700
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
+
+

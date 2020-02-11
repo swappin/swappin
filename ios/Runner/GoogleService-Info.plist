@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>614181893523-dfje93ev6j7eqt0aq64td6tsatnasd70.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.614181893523-dfje93ev6j7eqt0aq64td6tsatnasd70</string>
+	<key>API_KEY</key>
+	<string>AIzaSyD_Un8PQMYgByNnac7P0LFAzqQABzVrwJk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>614181893523</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>io.swappin</string>
+	<key>PROJECT_ID</key>
+	<string>swappin-database</string>
+	<key>STORAGE_BUCKET</key>
+	<string>swappin-database.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:614181893523:ios:cda3613ce612986b312466</string>
+	<key>DATABASE_URL</key>
+	<string>https://swappin-database.firebaseio.com</string>
+</dict>
+</plist>

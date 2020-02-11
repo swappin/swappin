@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "614181893523",
+    "firebase_url": "https://swappin-database.firebaseio.com",
+    "project_id": "swappin-database",
+    "storage_bucket": "swappin-database.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:614181893523:android:ef07955c93a113f3312466",
+        "android_client_info": {
+          "package_name": "io.swappin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "614181893523-as3j3kve6mg43ck7vp5es3h8ro8bucrl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.swappin",
+            "certificate_hash": "0195ab5d313193e98336c39104349660715a0cb9"
+          }
+        },
+        {
+          "client_id": "614181893523-7ojoet4v9jtac6inbk2smr3vsopbkkr5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSbmNLotwAUEWN93iPCfYA1bjlBPSTDwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "614181893523-7ojoet4v9jtac6inbk2smr3vsopbkkr5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "614181893523-dfje93ev6j7eqt0aq64td6tsatnasd70.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.swappin"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
