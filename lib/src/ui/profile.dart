@@ -12,9 +12,9 @@ import 'package:swappin/src/blocs/user_bloc.dart';
 import 'package:swappin/src/blocs/user_bloc_provider.dart';
 import 'package:swappin/src/initial.dart';
 import 'package:swappin/src/models/user.dart';
+import 'package:swappin/src/ui/config.dart';
 import 'package:swappin/src/ui/historic.dart';
 import 'package:swappin/src/ui/home.dart';
-import 'package:swappin/src/ui/login.dart';
 import 'package:swappin/src/ui/policy.dart';
 import 'package:swappin/src/ui/terms.dart';
 import 'package:swappin/src/ui/widgets/swappin-icon.dart';
@@ -355,9 +355,7 @@ class _ProfileState extends State<Profile> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Home(
-                      currentIndex: 0,
-                    ),
+                    builder: (context) => Config(),
                   ),
                 ),
                 child: Container(
@@ -398,98 +396,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Terms(),
-                  ),
-                ),
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Color(0xFFE8E8E8),
-                        width: 1.0,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: Opacity(
-                          opacity: 0.35,
-                          child: SwappinIcon(
-                            icon: "terms",
-                            firstColor: Colors.black,
-                            secondColor: Colors.black,
-                            width: 20,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        child: Text(
-                          "Termos de Uso",
-                          style: const TextStyle(
-                            fontSize: 12.0,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Policy(),
-                  ),
-                ),
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Color(0xFFE8E8E8),
-                        width: 1.0,
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        child: Opacity(
-                          opacity: 0.35,
-                          child: SwappinIcon(
-                            icon: "policy",
-                            firstColor: Colors.black,
-                            secondColor: Colors.black,
-                            width: 20,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        child: Text(
-                          "Política de Privacidade",
-                          style: const TextStyle(
-                            fontSize: 12.0,
-                            fontFamily: 'Poppins',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
                 onTap: () {
-
-                  print("OH ASHUAHUASHUAS LATITUDE: $latitude");
-                  print("OH ASHUAHUASHUAS LONGITUDE: $longitude");
                   initPlatformState();
                 },
                 child: Container(

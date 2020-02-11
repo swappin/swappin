@@ -95,8 +95,10 @@ flutter:
    - assets/map_style.txt
 
    # Icons Black
+   - assets/icons/black/logo.png
    - assets/icons/black/arrow_left_1.png
    - assets/icons/black/arrow_left_2.png
+   - assets/icons/black/arrow_right.png
    - assets/icons/black/arrow_repeat.png
    - assets/icons/black/bag.png
    - assets/icons/black/calendar.png
@@ -122,8 +124,10 @@ flutter:
    - assets/icons/black/files.png
    - assets/icons/black/gallery.png
    - assets/icons/black/terms.png
+   - assets/icons/black/question.png
    - assets/icons/black/policy.png
    - assets/icons/black/settings.png
+   - assets/icons/black/document-id.png
 
    # Icons Gradient
    - assets/icons/gradient/bag.png

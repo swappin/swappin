@@ -879,9 +879,28 @@ class _BagScreenState extends State<BagScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Excluir Item'),
+          title: Text('Excluir Item?',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+              color: Color(
+                0xFF00BFB2,
+              ),
+            ),),
           content:
-              const Text('Tem certeza que deseja remover este item da sacola?'),
+          const Text('Tem certeza que deseja remover este item da sacola?',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Poppins',
+              color: Color(
+                0xFF666666,
+              ),
+            ),
+          ),
+
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(32.0))),
           actions: <Widget>[
             Row(
               children: <Widget>[
@@ -889,6 +908,8 @@ class _BagScreenState extends State<BagScreen> {
                   child: Text(
                     'Cancelar',
                     style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Poppins',
                       color: Colors.redAccent,
                     ),
                   ),
@@ -903,7 +924,15 @@ class _BagScreenState extends State<BagScreen> {
                   },
                 ),
                 FlatButton(
-                  child: Text('Sim'),
+                  child: Text('Sim',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Poppins',
+                      color: Color(
+                        0xFF00BFB2,
+                      ),
+                    ),
+                  ),
                   onPressed: () {
                     setState(() {
                       total = totalList.reduce((a, b) => a + b);

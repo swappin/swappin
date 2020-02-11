@@ -9,9 +9,6 @@ class UserBloc {
 
   Observable<bool> get showProgress => _showProgress.stream;
 
-  Future<void> updateUserRange(String email, num range){
-    return _repository.updateUserRange(email, range);
-  }
   Stream<QuerySnapshot> getCurrentUser(String email)  {
     return _repository.getCurrentUser(email);
   }

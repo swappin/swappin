@@ -43,8 +43,6 @@ class AuthenticationProvider {
 //    return user;
 //  }
 
-
-
   Future<int> authenticateUser(String email) async {
     final QuerySnapshot result = await _firestore
         .collection("users")
@@ -57,6 +55,7 @@ class AuthenticationProvider {
       return 1;
     }
   }
+
   Future<void> registerUser(String uid, String email, String name, String birth,
       String genre, String photo) async {
     CollectionReference users = Firestore.instance.collection('users');
@@ -73,7 +72,6 @@ class AuthenticationProvider {
           'birth': birth,
           'genre': genre,
           'photo': photo,
-          'range': 2500.0,
           'experience': 100.0,
           'register-date': DateTime.now(),
         })
@@ -88,9 +86,31 @@ class AuthenticationProvider {
         .snapshots();
   }
 
-  Future<void> updateUserRange(String email, num range) {
-    DocumentReference ref = _firestore.collection('users').document(email);
-    ref.updateData({'range': range});
+  Future<void> updateUserData({String name, String cpf, File image}) async {
+    DocumentReference ref =
+        _firestore.collection('users').document(currentUserEmail);
+
+    if (image != null) {
+      String filePath = 'users/$currentUserUID.jpg';
+      _uploadTask = _storage.ref().child(filePath).putFile(image);
+      await (await _uploadTask.onComplete).ref.getDownloadURL().then(
+        (storageValue) {
+          UserUpdateInfo updateInfo = UserUpdateInfo();
+          updateInfo.photoUrl = storageValue.toString();
+          user.updateProfile(updateInfo).then((onUpdateSucess) {
+            currentUserName = name;
+            currentUserPhoto = storageValue.toString();
+            ref.updateData({'photo': storageValue.toString()});
+            ref.updateData({'name': name});
+            ref.updateData({'cpf': cpf});
+          });
+        },
+      ).catchError((onError) => print(onError.toString()));
+    } else {
+      currentUserName = name;
+      ref.updateData({'name': name});
+      ref.updateData({'cpf': cpf});
+    }
   }
 
 //  Future<int> signInWithEmailAndPassword(String email, String password) async {
@@ -111,22 +131,29 @@ class AuthenticationProvider {
 //    }
 //  }
 
-  final FirebaseStorage _storage = FirebaseStorage(
-      storageBucket: 'gs://swappin-database.appspot.com');
+  final FirebaseStorage _storage =
+      FirebaseStorage(storageBucket: 'gs://swappin-database.appspot.com');
 
   StorageUploadTask _uploadTask;
 
-  Future<void> _uploadProfilePhotoToStorage(String uid, String email, String password,
-      String name, String birth, String genre, File image) async {
+  Future<void> _uploadProfilePhotoToStorage(
+      String uid,
+      String email,
+      String password,
+      String name,
+      String birth,
+      String genre,
+      File image) async {
     String filePath = 'users/$uid.jpg';
     _uploadTask = _storage.ref().child(filePath).putFile(image);
     await (await _uploadTask.onComplete).ref.getDownloadURL().then(
-          (storageValue) {
+      (storageValue) {
         UserUpdateInfo updateInfo = UserUpdateInfo();
         updateInfo.photoUrl = storageValue.toString();
-        user.updateProfile(updateInfo).then((onUpdateSucess){
-          return registerUser(uid, email, name, birth, genre,
-              storageValue.toString()).then((onRegisterValue) => 1);
+        user.updateProfile(updateInfo).then((onUpdateSucess) {
+          return registerUser(
+                  uid, email, name, birth, genre, storageValue.toString())
+              .then((onRegisterValue) => 1);
         });
       },
     ).catchError((onError) => print(onError.toString()));
@@ -143,14 +170,15 @@ class AuthenticationProvider {
           .createUserWithEmailAndPassword(email: email, password: password)
           .then(
         (createValue) {
-          if(image != null){
-            return _uploadProfilePhotoToStorage(createValue.user.uid, email, password, name, birth, genre, image);
-          }else{
-
-            return registerUser(createValue.user.uid, email, name, birth, genre,
-                null).then((onRegisterValue) => 1);
+          if (image != null) {
+            return _uploadProfilePhotoToStorage(createValue.user.uid, email,
+                password, name, birth, genre, image);
+          } else {
+            return registerUser(
+                    createValue.user.uid, email, name, birth, genre, null)
+                .then((onRegisterValue) => 1);
           }
-},
+        },
       );
     }
   }

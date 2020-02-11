@@ -77,8 +77,8 @@ class Repository {
           String email, String code, int amount, double total) =>
       _firestoreProvider.updateProductAmount(email, code, amount, total);
 
-  Future<void> updateUserRange(String email, num range) =>
-      _authenticationProvider.updateUserRange(email, range);
+  Future<void> updateUserData({String name, String cpf, File image}) =>
+      _authenticationProvider.updateUserData(name: name, cpf: cpf, image: image);
 
   Future<void> getChange(String email, String code, double change) =>
       _firestoreProvider.getChange(email, code, change);

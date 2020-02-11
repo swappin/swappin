@@ -65,51 +65,48 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
       ),
-      body: Container(
-        child: ListView.builder(
-            itemCount: paymentMethodList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                padding: EdgeInsets.all(10),
-                child: ListTile(
-                  title: Text(paymentMethodList[index],
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.normal,
-                      fontFamily: 'Quicksand',
-                      color: Colors.black,
-                    ),
+      body: ListView.builder(
+          itemCount: paymentMethodList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              padding: EdgeInsets.all(10),
+              child: ListTile(
+                title: Text(paymentMethodList[index],
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Poppins',
+                    color: Color(0xFF666666),
                   ),
-                  trailing: Image.network(
-                    paymentThumbnailList[index],
-                    width: 40.0,
-                  ),
-                  onTap: () {
-                    if (paymentMethodList[index] != "Dinheiro") {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BagScreen(
-                            paymentMethod: paymentMethodList[index],
-                            paymentThumbnail: paymentThumbnailList[index],
-                          ),
+                ),
+                trailing: Image.network(
+                  paymentThumbnailList[index],
+                  width: 40.0,
+                ),
+                onTap: () {
+                  if (paymentMethodList[index] != "Dinheiro") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BagScreen(
+                          paymentMethod: paymentMethodList[index],
+                          paymentThumbnail: paymentThumbnailList[index],
                         ),
-                      );
-                    } else {
-                      paymentChangeCalculator(paymentMethodList[index], paymentThumbnailList[index]);
-                    }
-                  },
-                ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Color(0xFFE3E4E5),
-                    ),
+                      ),
+                    );
+                  } else {
+                    paymentChangeCalculator(paymentMethodList[index], paymentThumbnailList[index]);
+                  }
+                },
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Color(0xFFE3E4E5),
                   ),
                 ),
-              );
-            }),
-      ),
+              ),
+            );
+          }),
     );
   }
 

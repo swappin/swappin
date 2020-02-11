@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swappin/src/app.dart';
+import 'package:swappin/src/models/user.dart';
 
 import '../utils/strings.dart';
 
@@ -151,6 +153,13 @@ class LoginBloc {
     return _repository.registerUser(uid, email, name, birth, genre, photo);
   }
 
+  Future<void> updateUserData({File image}) {
+    return _repository.updateUserData(
+        name: _name.value != null ? _name.value : currentUserName,
+        cpf: _cpf.value != null ? _cpf.value : "Não Informado",
+        image: image);
+  }
+
   Future<int> signUpWithEmailAndPassword(File image, String genre) {
     return _repository.signUpWithEmailAndPassword(
         _email.value, _password.value, _name.value, _birth.value, genre, image);
@@ -172,6 +181,34 @@ class LoginBloc {
 
   Future<List> signInWithFacebook() {
     return _repository.signInWithFacebook();
+  }
+
+  Stream<QuerySnapshot> getCurrentUser(String email) {
+    return _repository.getCurrentUser(email);
+  }
+
+  List mapToList({DocumentSnapshot doc, List<DocumentSnapshot> docList}) {
+    if (docList != null) {
+      List<User> userData = [];
+      docList.forEach((document) {
+        num id = document.data['id'];
+        String name = document.data['name'];
+        String email = document.data['email'];
+        String cpf = document.data['cpf'];
+        String birth = document.data['birth'];
+        String genre = document.data['genre'];
+        String photo = document.data['photo'];
+        num range = document.data['range'];
+        num experience = document.data['experience'];
+        Map<dynamic, dynamic> badges = document.data['badges'];
+        User user = User(id, name, email, cpf, birth, genre, photo, range,
+            experience, badges);
+        userData.add(user);
+      });
+      return userData;
+    } else {
+      return null;
+    }
   }
 
   void dispose() async {
@@ -206,11 +243,12 @@ class LoginBloc {
     }
   }
 
-  String confirmPasswordMessage(String confirmPassword){
-    if(confirmPassword != _password.value) {
+  String confirmPasswordMessage(String confirmPassword) {
+    if (confirmPassword != _password.value) {
       return "A senha de confirmação é diferente da senha inserida.";
     }
   }
+
   bool validateFieldsRegister(
       String birth, String genre, String confirmPassword) {
     _birth.value = birth;
