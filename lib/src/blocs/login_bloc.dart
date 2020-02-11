@@ -149,8 +149,8 @@ class LoginBloc {
   }
 
   Future<void> registerUser(String uid, String email, String name, String birth,
-      String genre, String photo) {
-    return _repository.registerUser(uid, email, name, birth, genre, photo);
+      String genre, String photo, bool isSocialAuth) {
+    return _repository.registerUser(uid, email, name, birth, genre, photo, isSocialAuth);
   }
 
   Future<void> updateUserData({File image}) {
@@ -158,6 +158,12 @@ class LoginBloc {
         name: _name.value != null ? _name.value : currentUserName,
         cpf: _cpf.value != null ? _cpf.value : "Não Informado",
         image: image);
+  }
+
+  Future<void> updateUserEmail() {
+    print("Meu login: ");
+    print("Meu password: ");
+    return _repository.updateUserEmail(_email.value, _password.value);
   }
 
   Future<int> signUpWithEmailAndPassword(File image, String genre) {
@@ -201,8 +207,9 @@ class LoginBloc {
         num range = document.data['range'];
         num experience = document.data['experience'];
         Map<dynamic, dynamic> badges = document.data['badges'];
+        bool isSocialAuth =  document.data[['isSocialAuth']];
         User user = User(id, name, email, cpf, birth, genre, photo, range,
-            experience, badges);
+            experience, badges, isSocialAuth);
         userData.add(user);
       });
       return userData;

@@ -381,7 +381,7 @@ class SignUpSocialState extends State<SignUpSocial> {
   }
 
   registerUser() {
-    _bloc.registerUser(uid, email, displayName, _birth, _genre, photoUrl).then(
+    _bloc.registerUser(uid, email, displayName, _birth, _genre, photoUrl, true).then(
       (value) async {
         _bloc.showProgressReg(true);
         await Future.delayed(

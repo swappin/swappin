@@ -57,7 +57,7 @@ class AuthenticationProvider {
   }
 
   Future<void> registerUser(String uid, String email, String name, String birth,
-      String genre, String photo) async {
+      String genre, String photo, bool isSocialAuth) async {
     CollectionReference users = Firestore.instance.collection('users');
     var querySnapshot = await users.getDocuments();
     return _firestore
@@ -74,6 +74,7 @@ class AuthenticationProvider {
           'photo': photo,
           'experience': 100.0,
           'register-date': DateTime.now(),
+          'isSocialAuth': isSocialAuth,
         })
         .then((onValue) => onValue)
         .catchError((onError) => onError);
@@ -111,6 +112,44 @@ class AuthenticationProvider {
       ref.updateData({'name': name});
       ref.updateData({'cpf': cpf});
     }
+  }
+
+  Future<void> updateUserEmail(String email, String password) async {
+    FirebaseUser user = await _auth.currentUser();
+    DocumentReference ref =
+        _firestore.collection('users').document(currentUserEmail);
+    String oldEmail = currentUserEmail;
+
+    final AuthCredential credential = EmailAuthProvider.getCredential(
+      email: currentUserEmail,
+      password: password,
+    );
+    user.reauthenticateWithCredential(credential).then((onSignIn) {
+      user.updateEmail(email).then((onUpdate) {
+        _auth
+            .signInWithEmailAndPassword(email: email, password: password)
+            .then((onReauthenticate) {
+              currentUserEmail = email;
+          ref.get().then((doc) {
+            if (doc.exists) {
+              var data = doc.data;
+              _firestore
+                  .collection("users")
+                  .document(email)
+                  .setData(data)
+                  .then((onUpdate) {
+                _firestore
+                    .collection("users").document(email).updateData({'email': email});
+                _firestore.collection('users').document(oldEmail).delete();
+              });
+            } else {
+            }
+          });
+        });
+      }).catchError((onError) {
+        print("Erro ao reatenticar: $onError");
+      });
+    });
   }
 
 //  Future<int> signInWithEmailAndPassword(String email, String password) async {
@@ -151,8 +190,8 @@ class AuthenticationProvider {
         UserUpdateInfo updateInfo = UserUpdateInfo();
         updateInfo.photoUrl = storageValue.toString();
         user.updateProfile(updateInfo).then((onUpdateSucess) {
-          return registerUser(
-                  uid, email, name, birth, genre, storageValue.toString())
+          return registerUser(uid, email, name, birth, genre,
+                  storageValue.toString(), false)
               .then((onRegisterValue) => 1);
         });
       },
@@ -174,8 +213,8 @@ class AuthenticationProvider {
             return _uploadProfilePhotoToStorage(createValue.user.uid, email,
                 password, name, birth, genre, image);
           } else {
-            return registerUser(
-                    createValue.user.uid, email, name, birth, genre, null)
+            return registerUser(createValue.user.uid, email, name, birth, genre,
+                    null, false)
                 .then((onRegisterValue) => 1);
           }
         },

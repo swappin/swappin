@@ -54,6 +54,14 @@ class _ProfileState extends State<Profile> {
     prefs.setInt('range', range);
   }
 
+  getStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userRange = prefs.getInt('range');
+    });
+  }
+
+
   // Platform messages are asynchronous, so we initialize in an async method.
   initPlatformState() async {
     LocationData location;
@@ -103,6 +111,11 @@ class _ProfileState extends State<Profile> {
     super.initState();
 
     initPlatformState();
+    if(userRange == null ){
+      userRange = 2500;
+      addStringToSF(2500);
+    };
+    print("OH shit!");
   }
 
   @override
@@ -259,6 +272,7 @@ class _ProfileState extends State<Profile> {
                     if (userData.isNotEmpty) {
                       return rangeValue(userData);
                     } else {
+                      print(user.email);
                       return RangeError();
                     }
                   } else {

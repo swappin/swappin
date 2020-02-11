@@ -16,9 +16,9 @@ class Repository {
       _authenticationProvider.authenticateUser(email);
 
   Future<void> registerUser(String uid, String email, String name, String birth,
-          String genre, String photo) =>
+          String genre, String photo, bool isSocialAuth) =>
       _authenticationProvider.registerUser(
-          uid, email, name, birth, genre, photo);
+          uid, email, name, birth, genre, photo, isSocialAuth);
 
   Future<int> signUpWithEmailAndPassword(String email, String password,
           String name, String birth, String genre, File image) =>
@@ -79,6 +79,8 @@ class Repository {
 
   Future<void> updateUserData({String name, String cpf, File image}) =>
       _authenticationProvider.updateUserData(name: name, cpf: cpf, image: image);
+
+  Future<void> updateUserEmail(String email, String password) => _authenticationProvider.updateUserEmail(email, password);
 
   Future<void> getChange(String email, String code, double change) =>
       _firestoreProvider.getChange(email, code, change);

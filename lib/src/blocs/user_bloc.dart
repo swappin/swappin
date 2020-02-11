@@ -28,7 +28,8 @@ class UserBloc {
         num range = document.data['range'];
         num experience = document.data['experience'];
         Map<dynamic, dynamic> badges = document.data['badges'];
-        User user = User(id, name, email, cpf, birth, genre, photo, range, experience, badges);
+        bool isSocialAuth =  document.data[['isSocialAuth']];
+        User user = User(id, name, email, cpf, birth, genre, photo, range, experience, badges, isSocialAuth);
         userData.add(user);
       });
       return userData;
