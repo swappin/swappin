@@ -55,8 +55,7 @@ class _EditEmailState extends State<EditEmail> {
         ),
       ),
       body: Container(
-        alignment: Alignment(0.0, 0.0),
-        padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 25),
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 25),
         child: Column(
           children: <Widget>[
             Container(

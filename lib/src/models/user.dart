@@ -10,9 +10,11 @@ class User {
   final num _experience;
   final Map<dynamic, dynamic> _badges;
   final bool _isSocialAuth;
+  final String _registerDate;
 
   User(this._id, this._name, this._email, this._cpf, this._birth, this._genre,
-      this._photo, this._range, this._experience, this._badges, this._isSocialAuth);
+      this._photo, this._range, this._experience, this._badges, this._isSocialAuth,
+      this._registerDate,);
 
   num get id => _id;
 
@@ -35,4 +37,7 @@ class User {
   Map<dynamic, dynamic> get badges => _badges;
 
   bool get isSocialAuth =>  _isSocialAuth;
+
+
+  String get registerDate => _registerDate;
 }

@@ -7,7 +7,6 @@ import 'package:swappin/src/ui/tutorial.dart';
 import 'package:swappin/src/ui/policy.dart';
 import 'package:swappin/src/ui/register.dart';
 import 'package:swappin/src/ui/terms.dart';
-import 'package:swappin/src/ui/animations/loader.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
 import 'package:swappin/src/ui/widgets/swappin-icon.dart';
 import 'package:swappin/src/ui/widgets/swappin-input.dart';
@@ -29,7 +28,6 @@ class SignUpFormState extends State<SignUpForm> {
   File _image;
   String _genre = "Gênero";
   String _birth = "Insira sua data de nascimento";
-  TextEditingController _confirmPasswordController = TextEditingController();
   String _errorMessage;
 
   Future getImage(ImageSource _imageSource) async {
@@ -112,7 +110,13 @@ class SignUpFormState extends State<SignUpForm> {
             obscureText: true,
           ),
           Container(margin: EdgeInsets.only(top: 5, bottom: 5)),
-          confirmPasswordField(),
+          SwappinInput(
+            stream: _bloc.confirmPassword,
+            onChanged: _bloc.changeConfirmPassword,
+            hintText: StringConstant.passwordHint,
+            icon: "password",
+            obscureText: true,
+          ),
           Container(margin: EdgeInsets.only(top: 5, bottom: 5)),
           SwappinInput(
             stream: _bloc.name,
@@ -315,76 +319,6 @@ class SignUpFormState extends State<SignUpForm> {
       },
     );
   }
-
-  Widget confirmPasswordField() {
-    return Container(
-      height: 60.0,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Color(0xFFDDDDDD),
-          width: 1.0,
-        ),
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30.0),
-      ),
-      child: Stack(
-        alignment: Alignment.centerRight,
-        children: <Widget>[
-          Container(
-            padding: EdgeInsets.only(left: 25.0),
-            child: TextFormField(
-              controller: _confirmPasswordController,
-              keyboardType: TextInputType.emailAddress,
-              onChanged: _bloc.changePassword,
-              obscureText: true,
-              style: TextStyle(
-                color: Colors.grey,
-                fontFamily: 'Poppins',
-                fontSize: 14,
-              ),
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.all(0.0),
-                labelStyle: TextStyle(
-                  color: Colors.grey,
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                ),
-                hintText: StringConstant.confirmPasswordHint,
-                hintStyle: TextStyle(
-                  color: Colors.grey,
-                  fontFamily: 'Poppins',
-                  fontSize: 14,
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 0.0, color: Colors.transparent),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 0.0, color: Colors.transparent),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: BorderSide(width: 0.0, color: Colors.transparent),
-                ),
-                errorStyle: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Poppins',
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            width: 18,
-            margin: EdgeInsets.only(right: 28),
-            child: Opacity(
-              opacity: 0.3,
-              child: Image.asset("assets/icons/black/password.png"),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget genreField() {
     return Stack(
       children: <Widget>[
@@ -408,7 +342,6 @@ class SignUpFormState extends State<SignUpForm> {
       ],
     );
   }
-
   Widget submitButton() {
     return StreamBuilder(
         stream: _bloc.signUpStatus,
@@ -416,7 +349,8 @@ class SignUpFormState extends State<SignUpForm> {
           if (!snapshot.hasData || snapshot.hasError) {
             return button();
           } else {
-            return LoaderScreen();
+            _errorMessage = snapshot.error;
+            return button();
           }
         });
   }
@@ -427,12 +361,16 @@ class SignUpFormState extends State<SignUpForm> {
       width: double.infinity,
       child: SwappinButton(
         onPressed: () {
-          if (_bloc.validateFieldsRegister(
-              _birth, _genre, _confirmPasswordController.text)) {
+          if (_bloc.validateFieldsRegister(_birth, _genre) &&
+              _bloc.validateConfirmPasswordFields()) {
             registerUser();
+            print("TÁ TUDO OK NO CADASTRO");
           } else {
-            _errorMessage =
-                _bloc.confirmPasswordMessage(_confirmPasswordController.text);
+            if (_bloc.validateFieldsRegister(_birth, _genre) != true)
+              _errorMessage = _bloc.errorValidateField();
+            else if (_bloc.validateConfirmPasswordFields() != true)
+              _errorMessage = _bloc.errorPasswordConfirm();
+            print("PTEM PROBLEMAS NO CADASTRO $_errorMessage");
             showErrorMessage();
           }
         },
@@ -498,15 +436,22 @@ class SignUpFormState extends State<SignUpForm> {
     _bloc.signUpWithEmailAndPassword(_image, _genre).then((value) async {
       if (value == 0) {
         _bloc.showProgressReg(false);
+        _errorMessage = "Ops... Parece que o email ${_bloc.emailAddress} já está em uso.";
         showErrorMessage();
       } else {
-        _bloc.showProgressReg(true);
         await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => Tutorial(),
           ),
         );
+      }
+    }).catchError((onError) {
+      if (onError.toString() ==
+          "PlatformException(ERROR_INVALID_EMAIL, The email address is badly formatted., null)") {
+        _errorMessage = "Por favor, digite um e-mail válido.";
+
+        showErrorMessage();
       }
     });
   }

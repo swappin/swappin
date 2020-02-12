@@ -29,13 +29,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     'Dinheiro',
   ];
   List<String> paymentThumbnailList = [
-    'https://cdn.icon-icons.com/icons2/1178/PNG/512/visa-inverted_82058.png',
-    'https://cdn.icon-icons.com/icons2/1178/PNG/512/mastercardinverted_82047.png',
-    'http://www.audiomarca.com.br/wp-content/uploads/2016/05/elo.png',
-    'https://cdn.icon-icons.com/icons2/1178/PNG/512/visa-inverted_82058.png',
-    'https://cdn.icon-icons.com/icons2/1178/PNG/512/mastercardinverted_82047.png',
-    'http://www.audiomarca.com.br/wp-content/uploads/2016/05/elo.png',
-    'http://www.pngmart.com/files/7/Bill-PNG-HD.png',
+    'assets/payments/mastercard.png',
+    'assets/payments/visa.png',
+    'assets/payments/elo.png',
+    'assets/payments/mastercard.png',
+    'assets/payments/visa.png',
+    'assets/payments/elo.png',
+    'assets/payments/money.png',
   ];
 
   _PaymentScreenState({this.total});
@@ -78,7 +78,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     color: Color(0xFF666666),
                   ),
                 ),
-                trailing: Image.network(
+                trailing: Image.asset(
                   paymentThumbnailList[index],
                   width: 40.0,
                 ),

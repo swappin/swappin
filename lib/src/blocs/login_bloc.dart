@@ -17,6 +17,8 @@ class LoginBloc {
   final _email = BehaviorSubject<String>();
   final _resetEmail = BehaviorSubject<String>();
   final _password = BehaviorSubject<String>();
+  final _confirmPassword = BehaviorSubject<String>();
+  final _newPassword = BehaviorSubject<String>();
   final _name = BehaviorSubject<String>();
   final _cpf = BehaviorSubject<String>();
   final _birth = BehaviorSubject<String>();
@@ -32,6 +34,12 @@ class LoginBloc {
 
   Observable<String> get password =>
       _password.stream.transform(_validatePassword);
+
+  Observable<String> get confirmPassword =>
+      _confirmPassword.stream.transform(_validateConfirmPassword);
+
+  Observable<String> get newPassword =>
+      _newPassword.stream.transform(_validateNewPassword);
 
   Observable<String> get name => _name.stream.transform(_validateName);
 
@@ -54,6 +62,10 @@ class LoginBloc {
   Function(String) get changeResetEmail => _resetEmail.sink.add;
 
   Function(String) get changePassword => _password.sink.add;
+
+  Function(String) get changeConfirmPassword => _confirmPassword.sink.add;
+
+  Function(String) get changeNewPassword => _newPassword.sink.add;
 
   Function(String) get changeName => _name.sink.add;
 
@@ -104,6 +116,25 @@ class LoginBloc {
     }
   });
 
+  final _validateConfirmPassword =
+      StreamTransformer<String, String>.fromHandlers(
+          handleData: (confirmPassword, sink) {
+    if (confirmPassword.length > 3) {
+      sink.add(confirmPassword);
+    } else {
+      sink.addError(StringConstant.passwordValidateMessage);
+    }
+  });
+
+  final _validateNewPassword = StreamTransformer<String, String>.fromHandlers(
+      handleData: (newPassword, sink) {
+    if (newPassword.length > 3) {
+      sink.add(newPassword);
+    } else {
+      sink.addError(StringConstant.passwordValidateMessage);
+    }
+  });
+
   final _validateName =
       StreamTransformer<String, String>.fromHandlers(handleData: (name, sink) {
     if (RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]').hasMatch(name)) {
@@ -144,13 +175,28 @@ class LoginBloc {
     }
   });
 
+  Future<void> signout() {
+    _repository.signout();
+  }
+
   Future<int> authenticateUser(String email) {
     return _repository.authenticateUser(email);
   }
 
   Future<void> registerUser(String uid, String email, String name, String birth,
       String genre, String photo, bool isSocialAuth) {
-    return _repository.registerUser(uid, email, name, birth, genre, photo, isSocialAuth);
+    return _repository.registerUser(
+        uid, email, name, birth, genre, photo, isSocialAuth);
+  }
+
+  Future<void> registerDeletedUser(
+      String birth,
+      String genre,
+      String photo,
+      String reason,
+      String message,
+      String registerDate) {
+    return _repository.registerDeletedUser(birth, genre, photo, reason, message, registerDate);
   }
 
   Future<void> updateUserData({File image}) {
@@ -161,9 +207,11 @@ class LoginBloc {
   }
 
   Future<void> updateUserEmail() {
-    print("Meu login: ");
-    print("Meu password: ");
     return _repository.updateUserEmail(_email.value, _password.value);
+  }
+
+  Future<int> updateUserPassword() {
+    return _repository.updateUserPassword(_password.value, _newPassword.value);
   }
 
   Future<int> signUpWithEmailAndPassword(File image, String genre) {
@@ -177,8 +225,11 @@ class LoginBloc {
   }
 
   Future<void> resetPassword() {
-    print(_resetEmail.value);
     return _repository.resetPassword(_resetEmail.value);
+  }
+
+  Future<void> resetPasswordLogged() {
+    return _repository.resetPasswordLogged();
   }
 
   Future<List> signInWithGoogle() {
@@ -189,8 +240,8 @@ class LoginBloc {
     return _repository.signInWithFacebook();
   }
 
-  Stream<QuerySnapshot> getCurrentUser(String email) {
-    return _repository.getCurrentUser(email);
+  Stream<QuerySnapshot> getCurrentUser() {
+    return _repository.getCurrentUser();
   }
 
   List mapToList({DocumentSnapshot doc, List<DocumentSnapshot> docList}) {
@@ -207,9 +258,11 @@ class LoginBloc {
         num range = document.data['range'];
         num experience = document.data['experience'];
         Map<dynamic, dynamic> badges = document.data['badges'];
-        bool isSocialAuth =  document.data[['isSocialAuth']];
+        bool isSocialAuth = document.data[['isSocialAuth']];
+
+        String registerDate = document.data['register-date'].toString();
         User user = User(id, name, email, cpf, birth, genre, photo, range,
-            experience, badges, isSocialAuth);
+            experience, badges, isSocialAuth, registerDate);
         userData.add(user);
       });
       return userData;
@@ -242,6 +295,32 @@ class LoginBloc {
     }
   }
 
+  bool validateConfirmPasswordFields() {
+    if (isAuthMethod == true &&
+        _password.value.length > 3 &&
+        _confirmPassword.value.length > 3 &&
+        _confirmPassword.value == _password.value) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool validateNewPasswordFields() {
+    if (_password.value != null &&
+        _password.value.isNotEmpty &&
+        _newPassword.value != null &&
+        _newPassword.value.isNotEmpty &&
+        _confirmPassword.value != null &&
+        _confirmPassword.value.isNotEmpty &&
+        _newPassword.value != _password.value &&
+        _newPassword.value == _confirmPassword.value) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   bool validateResetField() {
     if (_resetEmail.value != null && _resetEmail.value.isNotEmpty) {
       return true;
@@ -250,14 +329,7 @@ class LoginBloc {
     }
   }
 
-  String confirmPasswordMessage(String confirmPassword) {
-    if (confirmPassword != _password.value) {
-      return "A senha de confirmação é diferente da senha inserida.";
-    }
-  }
-
-  bool validateFieldsRegister(
-      String birth, String genre, String confirmPassword) {
+  bool validateFieldsRegister(String birth, String genre) {
     _birth.value = birth;
     _genre.value = genre;
     if (_email.value != null &&
@@ -266,11 +338,8 @@ class LoginBloc {
         _password.value.isNotEmpty &&
         _name.value != null &&
         _name.value.isNotEmpty &&
-        _birth.value != null &&
-        _birth.value.isNotEmpty &&
-        _genre.value != null &&
-        _genre.value.isNotEmpty &&
-        confirmPassword == _password.value) {
+        birth != null &&
+        genre != null) {
       return true;
     } else {
       return false;
@@ -284,5 +353,13 @@ class LoginBloc {
     } else {
       return false;
     }
+  }
+
+  String errorPasswordConfirm() {
+    return "Por favor, verifique se a senha e a confirmação de senha são iguais.";
+  }
+
+  String errorValidateField() {
+    return "Parece que um dos campos foi preenchido de forma errada.";
   }
 }

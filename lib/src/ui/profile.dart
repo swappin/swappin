@@ -98,9 +98,6 @@ class _ProfileState extends State<Profile> {
 
     setState(() {
       _startLocation = location;
-      print("OH ASHUAHUASHUAS LATITUDE: $latitude");
-      print("OH ASHUAHUASHUAS LONGITUDE: $longitude");
-
       latitude = location.latitude;
       longitude = location.longitude;
     });
@@ -129,8 +126,6 @@ class _ProfileState extends State<Profile> {
         longitude =
             currentLocation != null ? currentLocation.longitude : -23.534600;
       });
-      print("Latitude: $latitude");
-      print("Longitude: $longitude");
     });
   }
 
@@ -263,7 +258,7 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               StreamBuilder(
-                stream: _bloc.getCurrentUser(user.email),
+                stream: _bloc.getCurrentUser(),
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasData) {

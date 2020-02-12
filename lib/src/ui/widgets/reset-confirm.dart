@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:swappin/main.dart';
 import 'package:swappin/src/blocs/login_bloc_provider.dart';
+import 'package:swappin/src/ui/animations/intro.dart';
 import 'package:swappin/src/ui/login.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
 
@@ -63,7 +65,7 @@ class ResetConfirm extends StatelessWidget {
                             onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => Login(),
+                                builder: (context) => IntroAnimation(),
                               ),
                             ),
                             child: Text(

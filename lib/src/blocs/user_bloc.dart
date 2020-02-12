@@ -9,8 +9,8 @@ class UserBloc {
 
   Observable<bool> get showProgress => _showProgress.stream;
 
-  Stream<QuerySnapshot> getCurrentUser(String email)  {
-    return _repository.getCurrentUser(email);
+  Stream<QuerySnapshot> getCurrentUser()  {
+    return _repository.getCurrentUser();
   }
 
   List mapToList(
@@ -28,8 +28,9 @@ class UserBloc {
         num range = document.data['range'];
         num experience = document.data['experience'];
         Map<dynamic, dynamic> badges = document.data['badges'];
-        bool isSocialAuth =  document.data[['isSocialAuth']];
-        User user = User(id, name, email, cpf, birth, genre, photo, range, experience, badges, isSocialAuth);
+        bool isSocialAuth =  document.data['isSocialAuth'];
+        String registerDate = document.data['registerDate'];
+        User user = User(id, name, email, cpf, birth, genre, photo, range, experience, badges, isSocialAuth, registerDate);
         userData.add(user);
       });
       return userData;

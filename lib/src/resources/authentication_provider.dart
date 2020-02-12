@@ -56,6 +56,10 @@ class AuthenticationProvider {
     }
   }
 
+  Future<void> signout() async {
+    await _auth.signOut();
+  }
+
   Future<void> registerUser(String uid, String email, String name, String birth,
       String genre, String photo, bool isSocialAuth) async {
     CollectionReference users = Firestore.instance.collection('users');
@@ -80,10 +84,31 @@ class AuthenticationProvider {
         .catchError((onError) => onError);
   }
 
-  Stream<QuerySnapshot> getCurrentUser(String email) {
+  Future<void> registerDeletedUser(String birth, String genre, String photo,
+      String reason, String message, String registerDate) async {
+
+    FirebaseUser user = await _auth.currentUser();
+    return _firestore.collection('deleted').document(currentUserEmail).setData({
+      'uid': currentUserUID,
+      'name': currentUserName,
+      'email': currentUserEmail,
+      'birth': birth,
+      'genre': genre,
+      'photo': photo,
+      'register-date': registerDate,
+      'delete-date': DateTime.now(),
+      'reason': reason,
+      'message': message,
+    }).then((onValue) {
+
+      user.delete();
+    }).catchError((onError) => onError);
+  }
+
+  Stream<QuerySnapshot> getCurrentUser() {
     return _firestore
         .collection('users')
-        .where('email', isEqualTo: email)
+        .where('email', isEqualTo: currentUserEmail)
         .snapshots();
   }
 
@@ -129,7 +154,7 @@ class AuthenticationProvider {
         _auth
             .signInWithEmailAndPassword(email: email, password: password)
             .then((onReauthenticate) {
-              currentUserEmail = email;
+          currentUserEmail = email;
           ref.get().then((doc) {
             if (doc.exists) {
               var data = doc.data;
@@ -139,16 +164,36 @@ class AuthenticationProvider {
                   .setData(data)
                   .then((onUpdate) {
                 _firestore
-                    .collection("users").document(email).updateData({'email': email});
+                    .collection("users")
+                    .document(email)
+                    .updateData({'email': email});
                 _firestore.collection('users').document(oldEmail).delete();
               });
-            } else {
-            }
+            } else {}
           });
         });
       }).catchError((onError) {
-        print("Erro ao reatenticar: $onError");
+        print("Erro ao tentar autenticar: $onError");
       });
+    });
+  }
+
+  Future<int> updateUserPassword(String password, String newPassword) async {
+    FirebaseUser user = await _auth.currentUser();
+    final AuthCredential credential = EmailAuthProvider.getCredential(
+      email: currentUserEmail,
+      password: password,
+    );
+    await user.reauthenticateWithCredential(credential).then((onSignIn) {
+      user.updatePassword(newPassword).then((onUpdate) {
+        print("FOI EM BITCHOU EHUHDUDS SIGNIN $onSignIn");
+        return 1;
+      }).catchError((onError) {
+        print(
+            "NEEEEEEM FOI OLOCO BITCHOU NEM FOI EM BITCHOU EHUHDUDS SIGNIN $onSignIn");
+        return 0;
+      });
+      print("M EHUHDUDS SIGNIN $onSignIn");
     });
   }
 
@@ -242,6 +287,10 @@ class AuthenticationProvider {
 
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
+  }
+
+  Future<void> resetPasswordLogged() async {
+    await _auth.sendPasswordResetEmail(email: currentUserEmail);
   }
 
   Future<List> signInWithGoogle() async {

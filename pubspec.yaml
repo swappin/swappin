@@ -28,6 +28,7 @@ dependencies:
   firebase_database: ^3.0.7
   firebase_storage: ^3.1.1
   firebase_dynamic_links: ^0.3.0
+  firebase_messaging: ^5.0.2
   cloud_firestore: ^0.13.0+1
   google_sign_in: ^4.1.1
   flutter_facebook_login: ^3.0.0
@@ -94,8 +95,13 @@ flutter:
    - assets/no-products.png
    - assets/map_style.txt
 
+   # Payment Methods
+   - assets/payments/mastercard.png
+   - assets/payments/visa.png
+   - assets/payments/elo.png
+   - assets/payments/money.png
+   -
    # Icons Black
-   - assets/icons/black/logo.png
    - assets/icons/black/arrow_left_1.png
    - assets/icons/black/arrow_left_2.png
    - assets/icons/black/arrow_right.png
@@ -128,6 +134,7 @@ flutter:
    - assets/icons/black/policy.png
    - assets/icons/black/settings.png
    - assets/icons/black/document-id.png
+   - assets/icons/black/swappin-logo.png
 
    # Icons Gradient
    - assets/icons/gradient/bag.png

@@ -12,6 +12,10 @@ class Repository {
   final _authenticationProvider = AuthenticationProvider();
   final _firestoreProvider = FirestoreProvider();
 
+  Future<void> signout() {
+    _authenticationProvider.signout();
+  }
+
   Future<int> authenticateUser(String email) =>
       _authenticationProvider.authenticateUser(email);
 
@@ -19,6 +23,11 @@ class Repository {
           String genre, String photo, bool isSocialAuth) =>
       _authenticationProvider.registerUser(
           uid, email, name, birth, genre, photo, isSocialAuth);
+
+  Future<void> registerDeletedUser(String birth, String genre, String photo,
+          String reason, String message, String registerDate) =>
+      _authenticationProvider.registerDeletedUser(
+          birth, genre, photo, reason, message, registerDate);
 
   Future<int> signUpWithEmailAndPassword(String email, String password,
           String name, String birth, String genre, File image) =>
@@ -30,6 +39,9 @@ class Repository {
 
   Future<void> resetPassword(String email) =>
       _authenticationProvider.resetPassword(email);
+
+  Future<void> resetPasswordLogged() =>
+      _authenticationProvider.resetPasswordLogged();
 
   Future<List> signInWithGoogle() => _authenticationProvider.signInWithGoogle();
 
@@ -78,9 +90,14 @@ class Repository {
       _firestoreProvider.updateProductAmount(email, code, amount, total);
 
   Future<void> updateUserData({String name, String cpf, File image}) =>
-      _authenticationProvider.updateUserData(name: name, cpf: cpf, image: image);
+      _authenticationProvider.updateUserData(
+          name: name, cpf: cpf, image: image);
 
-  Future<void> updateUserEmail(String email, String password) => _authenticationProvider.updateUserEmail(email, password);
+  Future<void> updateUserEmail(String email, String password) =>
+      _authenticationProvider.updateUserEmail(email, password);
+
+  Future<int> updateUserPassword(String password, String newPassword) =>
+      _authenticationProvider.updateUserPassword(password, newPassword);
 
   Future<void> getChange(String email, String code, double change) =>
       _firestoreProvider.getChange(email, code, change);
@@ -143,20 +160,32 @@ class Repository {
           num total,
           DateTime date,
           double review,
-        bool isReviwed
-      ) =>
-      _firestoreProvider.registerUserOrder(code, products, prices, amounts,
-          userName, storeName, storeAdress, storePhoto, note, method, total, date, review, isReviwed);
+          bool isReviwed) =>
+      _firestoreProvider.registerUserOrder(
+          code,
+          products,
+          prices,
+          amounts,
+          userName,
+          storeName,
+          storeAdress,
+          storePhoto,
+          note,
+          method,
+          total,
+          date,
+          review,
+          isReviwed);
 
-
-  Future<void> reviewStore(String storeName, String userComment, String code, int userReview) =>
+  Future<void> reviewStore(
+          String storeName, String userComment, String code, int userReview) =>
       _firestoreProvider.reviewStore(storeName, userComment, code, userReview);
 
   Future<void> collectNPS(String userComment, int userReview) =>
       _firestoreProvider.collectNPS(userComment, userReview);
 
-  Stream<QuerySnapshot> getCurrentUser(String email) =>
-      _authenticationProvider.getCurrentUser(email);
+  Stream<QuerySnapshot> getCurrentUser() =>
+      _authenticationProvider.getCurrentUser();
 
   Stream<QuerySnapshot> searchList() => _firestoreProvider.searchList();
 
@@ -171,8 +200,7 @@ class Repository {
   Stream<QuerySnapshot> verifyOrderStatus(String userName, String code) =>
       _firestoreProvider.verifyOrderStatus(userName, code);
 
-  Stream<QuerySnapshot> getBagItens() =>
-      _firestoreProvider.getBagItens();
+  Stream<QuerySnapshot> getBagItens() => _firestoreProvider.getBagItens();
 
   Stream<QuerySnapshot> searchProducts(String keyword) =>
       _firestoreProvider.searchProducts(keyword);

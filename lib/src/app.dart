@@ -85,6 +85,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
+    print(currentUserEmail);
     return StreamBuilder(
       stream: _storesBloc.searchList(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
