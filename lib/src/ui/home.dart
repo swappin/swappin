@@ -135,14 +135,15 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: currentIndex == 0
           ? PreferredSize(
-              preferredSize: Size.fromHeight(106.0), // here the desired height
+              preferredSize: Size.fromHeight(68),
               child: Container(
-                padding: EdgeInsets.fromLTRB(20.0, 50.0, 20.0, 5.0),
+                color: Color(0xFFF7F9F9),
+                padding: EdgeInsets.fromLTRB(20, 36, 20, 0),
                 child: Row(
                   children: <Widget>[
                     Container(
-                      width: 78.0,
-                      height: 78.0,
+                      width: 54,
+                      height: 54,
                       alignment: Alignment.topLeft,
                       child: FlatButton(
                         padding: EdgeInsets.all(0),
@@ -158,7 +159,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           children: <Widget>[
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100.0),
+                                borderRadius: BorderRadius.circular(100),
                                 // Box decoration takes a gradient
                                 gradient: LinearGradient(
                                   // Where the linear gradient begins and ends
@@ -176,13 +177,13 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             ),
                             currentUserPhoto != null
                                 ? Container(
-                                    width: 70.0,
-                                    height: 70.0,
+                                    width: 46,
+                                    height: 46,
                                     decoration: BoxDecoration(
                                       borderRadius:
-                                          BorderRadius.circular(100.0),
+                                          BorderRadius.circular(54),
                                       border: Border.all(
-                                          color: Colors.white, width: 4.0),
+                                          color: Colors.white, width: 2),
                                       image: DecorationImage(
                                           image: NetworkImage(
                                             currentUserPhoto,
@@ -243,27 +244,6 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 50.0,
-                      height: 50.0,
-                      alignment: Alignment.center,
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SearchScreen(),
-                              ));
-                        },
-                        child: Opacity(
-                          opacity: 0.65,
-                          child: Image.asset(
-                            "assets/icons/black/search.png",
-                            width: 22.0,
-                          ),
                         ),
                       ),
                     ),

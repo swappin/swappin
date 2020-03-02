@@ -15,8 +15,8 @@ import 'package:swappin/src/models/user.dart';
 import 'package:swappin/src/ui/config.dart';
 import 'package:swappin/src/ui/historic.dart';
 import 'package:swappin/src/ui/home.dart';
-import 'package:swappin/src/ui/policy.dart';
-import 'package:swappin/src/ui/terms.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:swappin/src/ui/widgets/swappin-icon.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -102,6 +102,7 @@ class _ProfileState extends State<Profile> {
       longitude = location.longitude;
     });
   }
+
 
   @override
   void initState() {

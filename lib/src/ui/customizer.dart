@@ -155,7 +155,7 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
       key: _scaffoldKey,
       body: Container(
         color: Colors.white,
-        child: Column(
+        child: ListView(
           children: <Widget>[
             Stack(
               children: <Widget>[
@@ -187,16 +187,16 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
               ],
             ),
             Container(
-              padding: EdgeInsets.all(15.0),
+              padding: EdgeInsets.all(15),
               child: Column(
                 children: <Widget>[
                   Container(
-                    height: 30.0,
+                    height: 30,
                     alignment: Alignment.topLeft,
                     child: Text(
                       productName,
                       style: TextStyle(
-                        fontSize: 18.0,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Poppins',
                         color: Color(0xFF444444),
@@ -204,14 +204,14 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                     ),
                   ),
                   Container(
-                    height: 30.0,
+                    height: 30,
                     alignment: Alignment.topLeft,
                     child: isPromotion ? Row(
                       children: <Widget>[
                         Text(
                           "R\$${promotionPrice.toStringAsFixed(2).toString()}  ",
                           style: TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Poppins',
                             color: Color(0xFF00BFB2),
@@ -220,7 +220,7 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                         Text(
                           "R\$${price.toStringAsFixed(2).toString()}",
                           style: TextStyle(
-                            fontSize: 15.0,
+                            fontSize: 14,
 
                             decoration: TextDecoration.lineThrough,
                             fontWeight: FontWeight.w500,
@@ -232,7 +232,7 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                     ) : Text(
                       "R\$${price.toStringAsFixed(2).toString()}",
                       style: TextStyle(
-                        fontSize: 18.0,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Poppins',
                         color: Color(0xFF00BFB2),
@@ -245,7 +245,7 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                     child: Text(
                       description,
                       style: const TextStyle(
-                        fontSize: 15.0,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Quicksand',
                         color: Colors.black54,
@@ -253,50 +253,48 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                     ),
                   ),
                   Container(
-                    height: 140.0,
+                    height: 160,
                     alignment: Alignment.topLeft,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            height: 30.0,
-                            child: Text(
-                              "Observação:",
-                              style: TextStyle(
-                                fontSize: 18.0,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          height: 30,
+                          child: Text(
+                            "Observação:",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                              color: Color(0xFF444444),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 120,
+                          padding: EdgeInsets.only(bottom: 10),
+                          child: TextField(
+                            controller: _noteController,
+                            maxLengthEnforced: false,
+                            maxLines: 10,
+                            decoration: InputDecoration(
+                              fillColor: Colors.white,
+                              filled: true,
+                              hintText: "Faça uma observação...",
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: Colors.grey, width: 0.0),
+                              ),
+                              hintStyle: TextStyle(
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: 'Poppins',
-                                color: Color(0xFF444444),
+                                fontFamily: 'Quicksand',
+                                color: Colors.black54,
                               ),
                             ),
                           ),
-                          Container(
-                            height: 200.0,
-                            padding: EdgeInsets.only(bottom: 40.0),
-                            child: TextField(
-                              controller: _noteController,
-                              maxLengthEnforced: false,
-                              maxLines: 10,
-                              decoration: InputDecoration(
-                                fillColor: Colors.white,
-                                filled: true,
-                                hintText: "Faça uma observação...",
-                                enabledBorder: const OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                      color: Colors.grey, width: 0.0),
-                                ),
-                                hintStyle: TextStyle(
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Quicksand',
-                                  color: Colors.black54,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -352,7 +350,7 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                     child: Text(
                       amount.toString(),
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'Poppins',
                         color: Color(0xFF888888),
@@ -428,7 +426,7 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                         Text(
                           "Adicionar",
                           style: TextStyle(
-                            fontSize: 18.0,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Poppins',
                             color: Colors.white,
@@ -438,7 +436,7 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                           child: Text(
                             isPromotion ? "R\$${(amount * promotionPrice).toStringAsFixed(2)}" : "R\$${(amount * price).toStringAsFixed(2)}",
                             style: TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Poppins',
                               color: Colors.white,

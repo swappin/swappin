@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:swappin/src/ui/about.dart';
 import 'package:swappin/src/ui/edit.dart';
-import 'package:swappin/src/ui/faq.dart';
+import 'package:swappin/src/ui/help.dart';
 import 'package:swappin/src/ui/policy.dart';
 import 'package:swappin/src/ui/security.dart';
 import 'package:swappin/src/ui/terms.dart';
@@ -246,7 +246,7 @@ class Config extends StatelessWidget {
                 ),
               ),
               title: Text(
-                "FAQ",
+                "Ajuda",
                 style: TextStyle(
                   fontSize: 14,
                   fontFamily: 'Poppins',
@@ -263,7 +263,7 @@ class Config extends StatelessWidget {
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FAQ(),
+                  builder: (context) => Help(),
                 ),
               ),
             ),

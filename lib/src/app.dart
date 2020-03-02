@@ -34,7 +34,7 @@ class _AppState extends State<App> {
 
   void getCurrentUser() async {
     user = await _auth.currentUser();
-    final result = await InternetAddress.lookup('swappin.io');
+    final result = await InternetAddress.lookup('www.google.com');
     if (result.isNotEmpty &&
         result[0].rawAddress.isNotEmpty &&
         user.isAnonymous != true) {
@@ -67,8 +67,6 @@ class _AppState extends State<App> {
     getCurrentUser();
     latitude = latitude != null ? latitude : -23.534600;
     longitude = longitude != null  ? longitude : -46.531828;
-    print("Latitude: $latitude");
-    print("Longitude: $longitude");
   }
 
   @override

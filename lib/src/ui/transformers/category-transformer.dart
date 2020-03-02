@@ -26,8 +26,18 @@ class categoryNavigator extends StatelessWidget {
         subcategories: [
           "Feminino",
           "Masculino",
-          "Bijouterias",
           "Calçados",
+          "Bijouterias",
+        ],
+      ),
+      StoreListscreen(
+        category: "Celulares & Eletrônicos",
+        cover: "assets/fashion-category.jpg",
+        subcategories: [
+          "Smartphones",
+          "Computadores",
+          "Eletrodomésticos",
+          "Acessórios",
         ],
       ),
       StoreListscreen(
@@ -35,7 +45,7 @@ class categoryNavigator extends StatelessWidget {
         cover: "assets/fashion-category.jpg",
         subcategories: [
           "Remédios",
-          "Fitness",
+          "Fitnesss",
           "Higiene Pessoal",
         ],
       )
@@ -48,7 +58,7 @@ class categoryNavigator extends StatelessWidget {
           child: list[index % list.length],
         );
       },
-      itemCount: 3,
+      itemCount: 4,
     );
   }
 }

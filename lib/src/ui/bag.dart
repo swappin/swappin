@@ -9,6 +9,7 @@ import 'package:swappin/src/blocs/orders_bloc_provider.dart';
 import 'package:swappin/src/models/bag.dart';
 import 'package:swappin/src/ui/home.dart';
 import 'package:swappin/src/ui/payment.dart';
+import 'package:swappin/src/ui/products.dart';
 import 'package:swappin/src/ui/widgets/no-products.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
 import 'package:swappin/src/ui/widgets/no-products.dart';
@@ -237,55 +238,72 @@ class _BagScreenState extends State<BagScreen> {
                     ),
                     Expanded(
                       child: Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
                         alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(left: 10.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ScoreStars(score:
-                            currentStoreScore),
-                            Container(
-                              child: Text(currentStoreName,
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                  color: Color(
-                                    0xFF444444,
+                        child: FlatButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => Products(
+                                store: currentStoreName,
+                                adress: currentStoreAdress,
+                                photo: currentStorePhoto,
+                                score: currentStoreScore,
+                              ),
+                            ),
+                          ),
+                          padding: EdgeInsets.only(left: 10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              ScoreStars(score: currentStoreScore),
+                              Container(
+                                margin: EdgeInsets.symmetric(vertical: 4),
+                                child: Text(
+                                  currentStoreName,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                    color: Color(
+                                      0xFF444444,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                            Container(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Opacity(
-                                    opacity: 0.5,
-                                    child: Image.asset(
-                                      "assets/icons/black/home.png",
-                                      width: 13.0,
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.only(left: 5.0),
-                                    child: Text(
-                                      '$currentStoreAdress',
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15.0,
-                                        fontFamily: 'Quicksand',
-                                        color: Color(0x88000000),
+                              Container(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Opacity(
+                                      opacity: 0.5,
+                                      child: Image.asset(
+                                        "assets/icons/black/home.png",
+                                        width: 13,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.only(left: 5.0),
+                                        child: Text(
+                                          currentStoreAdress,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                            fontFamily: 'Quicksand',
+                                            color: Color(0x88000000),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -326,7 +344,7 @@ class _BagScreenState extends State<BagScreen> {
                                 aspectRatio: 1.0,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(22.0),
+                                    borderRadius: BorderRadius.circular(22),
                                     image: DecorationImage(
                                       image: NetworkImage(
                                           productsList[index].photo),
@@ -348,7 +366,7 @@ class _BagScreenState extends State<BagScreen> {
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14.0,
+                                        fontSize: 12,
                                         fontFamily: 'Poppins',
                                       ),
                                     ),
@@ -360,7 +378,7 @@ class _BagScreenState extends State<BagScreen> {
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14.0,
+                                        fontSize: 12,
                                         fontFamily: 'Quicksand',
                                         color: Color(0x66000000),
                                       ),
@@ -369,7 +387,7 @@ class _BagScreenState extends State<BagScreen> {
                                       'R\$${productsList[index].price.toStringAsFixed(2)}',
                                       style: const TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 14.0,
+                                        fontSize: 12,
                                         fontFamily: 'Poppins',
                                         color: Color(0xFF00BFB2),
                                       ),
@@ -418,11 +436,10 @@ class _BagScreenState extends State<BagScreen> {
                                   ),
                                   Container(
                                     alignment: Alignment.center,
-                                    width: 40.0,
                                     child: Text(
                                       productsList[index].amount.toString(),
                                       style: TextStyle(
-                                        fontSize: 16.0,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                         fontFamily: 'Poppins',
                                         color: Color(0xFF888888),
@@ -537,7 +554,8 @@ class _BagScreenState extends State<BagScreen> {
                                   ),
                                 ),
                                 subtitle: Text(
-                                  paymentMethod,
+
+                                    paymentChange != null && paymentChange != "" ? "$paymentMethod - troco para R\$$paymentChange" : paymentMethod,
                                   style: TextStyle(
                                     fontSize: 13.0,
                                     fontFamily: 'Poppins',
@@ -879,7 +897,8 @@ class _BagScreenState extends State<BagScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Excluir Item?',
+          title: Text(
+            'Excluir Item?',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -887,9 +906,10 @@ class _BagScreenState extends State<BagScreen> {
               color: Color(
                 0xFF00BFB2,
               ),
-            ),),
-          content:
-          const Text('Tem certeza que deseja remover este item da sacola?',
+            ),
+          ),
+          content: const Text(
+            'Tem certeza que deseja remover este item da sacola?',
             style: TextStyle(
               fontSize: 14,
               fontFamily: 'Poppins',
@@ -898,7 +918,6 @@ class _BagScreenState extends State<BagScreen> {
               ),
             ),
           ),
-
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(32.0))),
           actions: <Widget>[
@@ -924,7 +943,8 @@ class _BagScreenState extends State<BagScreen> {
                   },
                 ),
                 FlatButton(
-                  child: Text('Sim',
+                  child: Text(
+                    'Sim',
                     style: TextStyle(
                       fontSize: 12,
                       fontFamily: 'Poppins',

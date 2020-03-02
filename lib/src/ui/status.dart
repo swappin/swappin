@@ -255,8 +255,7 @@ class _StatusScreenState extends State<StatusScreen> {
             ),
             child: Container(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 60),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+              child: ListView(
                 children: <Widget>[
                   Container(
                     padding: EdgeInsets.all(20),
@@ -303,7 +302,7 @@ class _StatusScreenState extends State<StatusScreen> {
                           ),
                         ),
                         Container(
-                          height: 80,
+                          height: 20,
                           margin: EdgeInsets.only(bottom: 10),
                           child: ListView.builder(
                               itemCount: orderList[0].productList.length,
@@ -375,15 +374,13 @@ class _StatusScreenState extends State<StatusScreen> {
                         Container(
                           child: Row(
                             children: <Widget>[
-                              Expanded(
-                                child: Text(
-                                  "Total",
-                                  style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Poppins',
-                                    color: Color(0xFF666666),
-                                  ),
+                              Text(
+                                "Total",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xFF666666),
                                 ),
                               ),
                               Text(
@@ -432,42 +429,40 @@ class _StatusScreenState extends State<StatusScreen> {
 
   Widget buttonBuild(List<Order> orderList) {
     if (orderList[0].status == "3") {
-      return Expanded(
-        child: Container(
-          alignment: Alignment.bottomCenter,
-          child: SwappinButton(
-            onPressed: () {
-              print(orderList[0].productList);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RatingScreen(
-                    storeName: orderList[0].storeName,
-                    storeAdress: orderList[0].storeAdress,
-                    storePhoto: orderList[0].storePhoto,
-                    storeScore: orderList[0].storeScore,
-                    code: orderList[0].code,
-                    photoURL: orderList[0].photo,
-                    note: orderList[0].note,
-                    method: orderList[0].method,
-                    initialDate: orderList[0].initialDate,
-                    finalDate: orderList[0].finalDate.toString(),
-                    total: orderList[0].total,
-                    productList: orderList[0].productList,
-                    priceList: orderList[0].priceList,
-                    amountList: orderList[0].amountList,
-                  ),
+      return Container(
+        alignment: Alignment.bottomCenter,
+        child: SwappinButton(
+          onPressed: () {
+            print(orderList[0].productList);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RatingScreen(
+                  storeName: orderList[0].storeName,
+                  storeAdress: orderList[0].storeAdress,
+                  storePhoto: orderList[0].storePhoto,
+                  storeScore: orderList[0].storeScore,
+                  code: orderList[0].code,
+                  photoURL: orderList[0].photo,
+                  note: orderList[0].note,
+                  method: orderList[0].method,
+                  initialDate: orderList[0].initialDate,
+                  finalDate: orderList[0].finalDate.toString(),
+                  total: orderList[0].total,
+                  productList: orderList[0].productList,
+                  priceList: orderList[0].priceList,
+                  amountList: orderList[0].amountList,
                 ),
-              );
-            },
-            child: Text(
-              "Finalizar Pedido",
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Poppins',
-                color: Color(0xFFFFFFFF),
               ),
+            );
+          },
+          child: Text(
+            "Finalizar Pedido",
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+              color: Color(0xFFFFFFFF),
             ),
           ),
         ),

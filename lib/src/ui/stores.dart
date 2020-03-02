@@ -2,10 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:swappin/src/app.dart';
 import 'package:swappin/src/ui/products.dart';
+import 'package:swappin/src/ui/search.dart';
 import 'package:swappin/src/ui/widgets/no-stores.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
 import 'package:swappin/src/ui/widgets/no-stores.dart';
 import 'package:swappin/src/ui/widgets/store-list-item.dart';
+import 'package:swappin/src/ui/widgets/swappin-icon.dart';
 import '../blocs/stores_bloc_provider.dart';
 import '../models/store.dart';
 
@@ -38,6 +40,7 @@ class _StoreListState extends State<StoreListscreen> {
   String cover;
   List subcategories;
   List<Color> colorList = [];
+  TextEditingController _controller = TextEditingController();
 
   _StoreListState({this.category, this.cover, this.subcategories});
 
@@ -61,7 +64,7 @@ class _StoreListState extends State<StoreListscreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 15),
+      color: Color(0xFFF7F9F9),
       alignment: Alignment.topCenter,
       child: StreamBuilder(
         stream: _bloc.storesList(isSubcategory, category, subcategory),
@@ -70,12 +73,10 @@ class _StoreListState extends State<StoreListscreen> {
             List<DocumentSnapshot> docs = snapshot.data.documents;
             List<Store> storesList = _bloc.mapToList(docList: docs);
             if (storesList.isNotEmpty) {
-              storesList
-                  .sort((a, b) => a.meters.compareTo(b.meters));
+              storesList.sort((a, b) => a.meters.compareTo(b.meters));
               return buildList(storesList);
             } else {
               if (!storesList.contains(subcategory)) {
-                print("Ahuuuul");
                 return buildList(storesList);
               }
               return NoStoresScreen();
@@ -94,47 +95,119 @@ class _StoreListState extends State<StoreListscreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 15),
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            margin: EdgeInsets.symmetric(vertical: 15),
             child: Container(
-              height: 150,
-              padding: EdgeInsets.all(20.0),
-              alignment: Alignment.bottomLeft,
+              height: 48,
+              alignment: Alignment.center,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30.0),
-                image: DecorationImage(
-                  image: AssetImage(cover),
-                  fit: BoxFit.cover,
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x11135252),
+                      blurRadius: 15,
+                      spreadRadius: 0,
+                      offset: Offset(
+                        0.0,
+                        0.0,
+                      ),
+                    )
+                  ],
+                  border: Border.all(
+                    color: Color(0xFFE5E9E9),
+                    width: 1,
+                  )),
+              padding: EdgeInsets.fromLTRB(20, 0, 5, 0),
+              child: TextField(
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SearchScreen(filter: _controller.text),
+                          ));
+                    },
+                    icon: Opacity(
+                      opacity: 0.65,
+                      child: Image.asset(
+                        "assets/icons/black/search.png",
+                        width: 16,
+                      ),
+                    ),
+                  ),
+                  hintText: "Qual produto deseja?",
+                  border: InputBorder.none,
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    "Categorias",
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins',
-                      color: Color(0xFF82FAE4),
-                    ),
-                  ),
-                  Text(
-                    category,
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins',
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
+                controller: _controller,
+                cursorColor: Color(0xFF00BFB2),
+                style: TextStyle(
+                  color: Color(0xFF00BFB2),
+                ),
+                cursorWidth: 3.0,
               ),
             ),
           ),
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Container(
+                height: 150,
+                padding: EdgeInsets.all(20.0),
+                alignment: Alignment.bottomLeft,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30.0),
+                  image: DecorationImage(
+                    image: AssetImage(cover),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                        width: double.infinity,
+                        alignment: Alignment.topRight,
+                        child: SwappinIcon(
+                          icon: "swipe",
+                          firstColor: Colors.white,
+                          secondColor: Colors.white,
+                          width: 36,
+                        )),
+                    Container(
+                      width: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "Categorias",
+                            style: TextStyle(
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                              color: Color(0xFF82FAE4),
+                            ),
+                          ),
+                          Text(
+                            category,
+                            style: TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                )),
+          ),
+          Container(
             padding: EdgeInsets.only(left: 15),
-            height: 100,
+            height: 70,
             child: subcategoryListBuilder(),
           ),
           Container(
@@ -188,7 +261,7 @@ class _StoreListState extends State<StoreListscreen> {
   }
 
   Widget storeListBuilder(List<Store> storesList) {
-    if(userRange == null){
+    if (userRange == null) {
       userRange = 2500;
     }
     return ListView.builder(
@@ -202,13 +275,16 @@ class _StoreListState extends State<StoreListscreen> {
             children: <Widget>[
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 15),
-                height: 100.0,
+                height: 75,
                 decoration: BoxDecoration(
-                  border: Border(top: BorderSide(color: Color(0xEEE9FF))),
+                  border: Border(
+                    top: BorderSide(
+                      color: Color(0xEEE9FF),
+                    ),
+                  ),
                 ),
                 child: FlatButton(
-                  padding:
-                  EdgeInsets.symmetric(horizontal: 0.0, vertical: 5.0),
+                  padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 5.0),
                   onPressed: () {
                     Navigator.push(
                       context,

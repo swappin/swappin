@@ -11,9 +11,15 @@ import 'package:swappin/src/ui/widgets/search-list-item.dart';
 import 'package:diacritic/diacritic.dart';
 
 class SearchScreen extends StatefulWidget {
+  final String filter;
+  SearchScreen({
+    Key key,
+  @required this.filter}) : super(key: key);
   @override
   _SearchListState createState() {
-    return _SearchListState();
+    return _SearchListState(
+      filter: this.filter
+    );
   }
 }
 
@@ -24,6 +30,7 @@ class _SearchListState extends State<SearchScreen> {
   TextEditingController controller = TextEditingController();
   String filter;
 
+  _SearchListState({this.filter});
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();

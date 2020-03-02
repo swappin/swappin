@@ -197,11 +197,11 @@ class _ProductsState extends State<Products> {
                                 opacity: 0.5,
                                 child: Image.asset(
                                   "assets/icons/black/home.png",
-                                  width: 13.0,
+                                  width: 13,
                                 ),
                               ),
                               Container(
-                                width: 4.0,
+                                width: 4,
                               ),
                               Container(
                                 child: Text(
@@ -210,7 +210,7 @@ class _ProductsState extends State<Products> {
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 15.0,
+                                    fontSize: 12,
                                     fontFamily: 'Quicksand',
                                     color: Color(0x88000000),
                                   ),

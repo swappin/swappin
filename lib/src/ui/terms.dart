@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swappin/src/ui/legal/terms-of-service.dart';
 
 class Terms extends StatelessWidget {
   @override
@@ -32,7 +33,7 @@ class Terms extends StatelessWidget {
       body: Container(
         alignment: Alignment(0.0, 0.0),
         padding: EdgeInsets.symmetric(vertical: 10.0),
-        child: Text("Termos de Uso"),
+        child: TermsOfService(),
       ),
     );
   }

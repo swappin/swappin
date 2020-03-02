@@ -26,8 +26,6 @@ Future<void> main() async {
   location.onLocationChanged().listen((LocationData currentLocation) {
     latitude = currentLocation != null ? currentLocation.latitude : -23.534600;
     longitude = currentLocation != null ? currentLocation.longitude : -23.534600;
-    print("Latitude: $latitude");
-    print("Longitude: $longitude");
   });
   runApp(
     LoginBlocProvider(

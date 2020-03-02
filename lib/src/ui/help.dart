@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-class About extends StatelessWidget {
+class Help extends StatefulWidget {
+  @override
+  _HelpState createState() => _HelpState();
+}
+
+class _HelpState extends State<Help> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +23,7 @@ class About extends StatelessWidget {
           ),
         ),
         title: Text(
-          "Sobre a Swappin",
+          "Ajuda",
           style: TextStyle(
             fontSize: 16.0,
             fontWeight: FontWeight.bold,
@@ -39,7 +44,7 @@ class About extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                    "O que quiser, onde estiver.",
+                    "Nos conte o seu problema!",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -51,7 +56,7 @@ class About extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.only(bottom: 20),
                   child: Text(
-                    "A Swappin é um aplicativo que conecta usuários à produtos e lojas próximas de um modo simples e prática. Com a Swappin você pode saber a distância das lojas próximas e acessar os produtos vendidos por estas, pesquisar e comparar preços dos produtos próximos a você, realizar suas compras com tranquilidade e retirar no local quando quiser. Caso já esteja no local, como um resraurante, por exemplo, é só fazer check-in, pedir da mesa e receber sem precisar de filas. Com a Swappin você encontra o que quiser, onde estiver.",
+                    "Para qualquer tipo de assunto, seja dúvidas, reclamações, opiniões, etc., favor nos contatar. Responderemos o mais rápido possível. Por favor, envie e-mail para:",
                     style: TextStyle(
                       fontSize: 12,
                       fontFamily: 'Poppins',
@@ -61,19 +66,9 @@ class About extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  child: Text(
-                    "Saiba mais. Acesse:",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontFamily: 'Poppins',
-                      color: Color(0xFF666666),
-                    ),
-                  ),
-                ),
-                Container(
                   margin: EdgeInsets.only(bottom: 20),
                   child: Text(
-                    "www.swappin.io",
+                    "swappin@swappin.io",
                     style: TextStyle(
                       fontSize: 12,
                       fontFamily: 'Poppins',

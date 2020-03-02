@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:location/location.dart';
 import 'package:latlong/latlong.dart';
-import 'package:swappin/src/models/review.dart';
 import '../../main.dart';
 import '../models/store.dart';
 import '../utils/strings.dart';
