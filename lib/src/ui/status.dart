@@ -1,5 +1,9 @@
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:swappin/main.dart';
 import 'package:swappin/src/app.dart';
 import 'package:swappin/src/blocs/orders_bloc.dart';
 import 'package:swappin/src/blocs/orders_bloc_provider.dart';
@@ -7,9 +11,26 @@ import 'package:swappin/src/models/order.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
 import 'package:swappin/src/ui/products.dart';
 import 'package:swappin/src/ui/rating.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
 import 'package:swappin/src/ui/widgets/score-stars.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+
+class MapTypes {
+  const MapTypes({this.title});
+
+  final String title;
+}
+
+const List<MapTypes> types = const <MapTypes>[
+  const MapTypes(title: 'Normal'),
+  const MapTypes(title: 'Híbrido'),
+  const MapTypes(title: 'Satélite'),
+  const MapTypes(title: 'Terreno'),
+];
+
+BitmapDescriptor sourceIcon;
+BitmapDescriptor destinationIcon;
 
 class StatusScreen extends StatefulWidget {
   final String code;
@@ -23,6 +44,15 @@ class StatusScreen extends StatefulWidget {
 class _StatusScreenState extends State<StatusScreen> {
   OrdersBloc _bloc;
   String code;
+  GoogleMapController _mapController;
+  Map<CircleId, Circle> circles = <CircleId, Circle>{};
+  final Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  final Map<PolylineId, Polyline> polylines = <PolylineId, Polyline>{};
+  List<LatLng> polylineCoordinates = [];
+  PolylinePoints polylinePoints = PolylinePoints();
+  String _mapStyle;
+  int _indexStore = 0;
+  String googleMapsAPI = "AIzaSyDvNByqTK2MFOW0yg4k3RAbYYt2zbrgcPg";
 
   compareDate(dynamic finalDate) {
     final difference = DateTime.now().difference(finalDate).inMinutes;
@@ -42,6 +72,33 @@ class _StatusScreenState extends State<StatusScreen> {
 
   _StatusScreenState({this.code});
 
+  void onMapCreated(GoogleMapController controller) {
+    setState(() {
+      _mapController = controller;
+      _mapController.setMapStyle(_mapStyle);
+    });
+  }
+
+  Future<void> getStoreCoordinates() async {
+    QuerySnapshot querySnapshot = await Firestore.instance
+        .collectionGroup('orders')
+        .where('code', isEqualTo: code)
+        .getDocuments();
+    var orderList = querySnapshot.documents;
+    orderList.forEach((data) {
+      _getPolylines(data['storeLatitude'], data['storeLongitude']);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getStoreCoordinates();
+    rootBundle.loadString('assets/map_style.txt').then((string) {
+      _mapStyle = string;
+    });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -57,32 +114,9 @@ class _StatusScreenState extends State<StatusScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFF1F4F5),
-        elevation: 0,
-        leading: FlatButton(
-          onPressed: () => Navigator.pop(context),
-          child: Image.asset(
-            "assets/icons/black/arrow_left_1.png",
-            width: 10.0,
-          ),
-        ),
-        title: Text(
-          "Status do Pedido",
-          style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Poppins',
-            color: Color(
-              0xFF00BFB2,
-            ),
-          ),
-        ),
-      ),
       body: Container(
-        color: Color(0xFFF1F4F5),
         child: StreamBuilder(
-          stream: _bloc.getNotifications(),
+          stream: _bloc.getOrderStatus(code),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasData) {
@@ -92,7 +126,10 @@ class _StatusScreenState extends State<StatusScreen> {
                 orderList.sort((b, a) => a.finalDate.compareTo(b.finalDate));
                 return orderListBuilder(orderList);
               } else {
-                return NoProductsScreen();
+                return EmptyScreen(
+                  message: "Eita, não há nada para ver o status!\nBora fazer umas comprinhas?",
+                  image: "products",
+                );
               }
             } else {
               return LoaderScreen();
@@ -104,131 +141,251 @@ class _StatusScreenState extends State<StatusScreen> {
   }
 
   Widget orderListBuilder(List<Order> orderList) {
+    final Marker markerStore = Marker(
+      markerId: MarkerId(0.toString()),
+      position: LatLng(orderList[0].storeLatitude, orderList[0].storeLongitude),
+      infoWindow: InfoWindow(
+          title: orderList[0].storeName,
+          snippet: orderList[0].storeScore.toString()),
+    );
+    final Marker markerUser = Marker(
+      markerId: MarkerId(1.toString()),
+      position: LatLng(latitude, longitude),
+    );
+    markers[MarkerId(0.toString())] = markerStore;
+    markers[MarkerId(1.toString())] = markerUser;
     return Column(
       children: <Widget>[
-        FlatButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Products(
-                  store: orderList[0].storeName,
-                  photo: orderList[0].storePhoto,
-                  adress: orderList[0].storeAdress,
-                  score: orderList[0].storeScore,
-                  distance: 0,
-                  delivery: "",
-                ),
+        Expanded(
+          child: Stack(
+            children: <Widget>[
+              GoogleMap(
+                trafficEnabled: false,
+                padding: EdgeInsets.all(39),
+                initialCameraPosition: CameraPosition(
+                    target: LatLng(latitude, longitude), zoom: 17),
+                myLocationEnabled: true,
+                tiltGesturesEnabled: true,
+                compassEnabled: true,
+                scrollGesturesEnabled: true,
+                zoomGesturesEnabled: true,
+                onMapCreated: onMapCreated,
+                markers: Set<Marker>.of(markers.values),
+                polylines: Set<Polyline>.of(polylines.values),
+                mapToolbarEnabled: true,
               ),
-            );
-          },
-          child: Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10.0),
-            height: 110,
-            child: Row(
-              children: <Widget>[
-                Container(
-                  width: 78.0,
-                  height: 78.0,
-                  alignment: Alignment.topLeft,
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Stack(
-                      alignment: Alignment.center,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    height: 100,
+                    width: double.infinity,
+                    padding: EdgeInsets.fromLTRB(0, 48, 0, 5),
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                      colors: [Colors.white, Color(0x22FFFFFF)],
+                      stops: [0.5, 1],
+                      begin: Alignment(0, -3),
+                      end: Alignment(0, 1),
+                    )),
+                    child: Row(
                       children: <Widget>[
                         Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100.0),
-                            gradient: LinearGradient(
-                              begin: Alignment.topRight,
-                              end: Alignment.bottomLeft,
-                              stops: [0.1, 0.9],
-                              colors: [
-                                Color(0xFF00BFB2),
-                                Color(0xFF05A9C7),
-                              ],
+                          width: 55,
+                          height: 58,
+                          child: FlatButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Image.asset(
+                              "assets/icons/black/arrow_left_1.png",
+                              width: 10,
                             ),
                           ),
                         ),
-                        Container(
-                          width: 70.0,
-                          height: 70.0,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100.0),
-                            border: Border.all(color: Colors.white, width: 4.0),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                  orderList[0].storePhoto,
-                                ),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    padding: EdgeInsets.only(left: 10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        ScoreStars(score: orderList[0].storeScore),
-                        Container(
+                        Expanded(
+                            child: Container(
                           child: Text(
-                            orderList[0].storeName,
+                            "Meu Pedido",
+                            textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 18.0,
+                              fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Poppins',
                               color: Color(
-                                0xFF444444,
+                                0xFF00BFB2,
                               ),
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 10.0,
+                                  color: Colors.white,
+                                  offset: Offset(0, 0),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
+                        )),
                         Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              Opacity(
-                                opacity: 0.5,
-                                child: Image.asset(
-                                  "assets/icons/black/home.png",
-                                  width: 13.0,
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(left: 5.0),
-                                child: Text(
-                                  orderList[0].storeAdress,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 15.0,
-                                    fontFamily: 'Quicksand',
-                                    color: Color(0x88000000),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                          width: 60,
+                          height: 60,
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x11333333),
+                          blurRadius: 25,
+                          // has the effect of softening the shadow
+                          spreadRadius: 1,
+                          // has the effect of extending the shadow
+                          offset: Offset(
+                            0, // horizontal, move right 10
+                            0, // vertical, move down 10
+                          ),
+                        )
+                      ],
+                    ),
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Products(
+                                store: orderList[0].storeName,
+                                photo: orderList[0].storePhoto,
+                                adress: orderList[0].storeAdress,
+                                score: orderList[0].storeScore,
+                                distance: 0,
+                                delivery: "",
+                                storeLatitude: orderList[0].storeLatitude,
+                                storeLongitude: orderList[0].storeLongitude),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10.0),
+                        height: 110,
+                        child: Row(
+                          children: <Widget>[
+                            Container(
+                              width: 78.0,
+                              height: 78.0,
+                              alignment: Alignment.topLeft,
+                              child: GestureDetector(
+                                onTap: () {},
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        gradient: LinearGradient(
+                                          begin: Alignment.topRight,
+                                          end: Alignment.bottomLeft,
+                                          stops: [0.1, 0.9],
+                                          colors: [
+                                            Color(0xFF00BFB2),
+                                            Color(0xFF05A9C7),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      width: 70.0,
+                                      height: 70.0,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100.0),
+                                        border: Border.all(
+                                            color: Colors.white, width: 4.0),
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                              orderList[0].storePhoto,
+                                            ),
+                                            fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.only(left: 10.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    ScoreStars(score: orderList[0].storeScore),
+                                    Container(
+                                      child: Text(
+                                        orderList[0].storeName,
+                                        style: TextStyle(
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Poppins',
+                                          color: Color(
+                                            0xFF444444,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Opacity(
+                                            opacity: 0.5,
+                                            child: Image.asset(
+                                              "assets/icons/black/home.png",
+                                              width: 13.0,
+                                            ),
+                                          ),
+                                          Container(
+                                            width: 4.0,
+                                          ),
+                                          Expanded(
+                                            child: Container(
+                                              child: Text(
+                                                orderList[0].storeAdress,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12.0,
+                                                  fontFamily: 'Quicksand',
+                                                  color: Color(0xBB000000),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        Container(
-            padding: EdgeInsets.only(bottom: 20),
-            child: statusBuild(orderList[0].status)),
         Expanded(
           child: Container(
             width: double.infinity,
@@ -255,19 +412,130 @@ class _StatusScreenState extends State<StatusScreen> {
             ),
             child: Container(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 60),
-              child: ListView(
+              child: Column(
                 children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(bottom: 20),
-                          child: Row(
-                            children: <Widget>[
-                              Expanded(
-                                child: Text(
-                                  'Resumo',
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(bottom: 20),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Text(
+                                    'Resumo',
+                                    style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Poppins',
+                                      color: Color(0xFF666666),
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      "Código: ",
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Poppins',
+                                        color: Color(0xFFAAAAAA),
+                                      ),
+                                    ),
+                                    Text(
+                                      orderList[0].code,
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Poppins',
+                                        color: Color(0xFFAAAAAA),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.topCenter,
+                            height: 100,
+                            margin: EdgeInsets.only(bottom: 10),
+                            child: ListView.builder(
+                                itemCount: orderList[0].productList.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                        child: Row(
+                                          children: <Widget>[
+                                            Text(
+                                              "${orderList[0].amountList[index].toString()}   ",
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Poppins',
+                                                color: Color(0xFF666666),
+                                              ),
+                                            ),
+                                            Text(
+                                              orderList[0].productList[index],
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontFamily: 'Poppins',
+                                                color: Color(0xFF666666),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        "R\$${orderList[0].priceList[index].toStringAsFixed(2)}",
+                                        style: TextStyle(
+                                          fontSize: 14.0,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFF666666),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                          Container(
+                            alignment: Alignment.topLeft,
+                            margin: EdgeInsets.only(bottom: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Método de Pagamento',
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFF666666),
+                                  ),
+                                ),
+                                Text(
+                                  orderList[0].method,
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFF666666),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  "Total",
                                   style: TextStyle(
                                     fontSize: 18.0,
                                     fontWeight: FontWeight.bold,
@@ -275,127 +543,20 @@ class _StatusScreenState extends State<StatusScreen> {
                                     color: Color(0xFF666666),
                                   ),
                                 ),
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    "Código: ",
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Poppins',
-                                      color: Color(0xFFAAAAAA),
-                                    ),
+                                Text(
+                                  "R\$${orderList[0].total.toStringAsFixed(2)}",
+                                  style: TextStyle(
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFF999999),
                                   ),
-                                  Text(
-                                    orderList[0].code,
-                                    style: TextStyle(
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Poppins',
-                                      color: Color(0xFFAAAAAA),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(
-                          height: 20,
-                          margin: EdgeInsets.only(bottom: 10),
-                          child: ListView.builder(
-                              itemCount: orderList[0].productList.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: Row(
-                                        children: <Widget>[
-                                          Text(
-                                            "${orderList[0].amountList[index].toString()}   ",
-                                            style: TextStyle(
-                                              fontSize: 14.0,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Poppins',
-                                              color: Color(0xFF666666),
-                                            ),
-                                          ),
-                                          Text(
-                                            orderList[0].productList[index],
-                                            style: TextStyle(
-                                              fontSize: 14.0,
-                                              fontFamily: 'Poppins',
-                                              color: Color(0xFF666666),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Text(
-                                      "R\$${orderList[0].priceList[index].toStringAsFixed(2)}",
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Poppins',
-                                        color: Color(0xFF666666),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
-                        ),
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.only(bottom: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Método de Pagamento',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                  color: Color(0xFF666666),
-                                ),
-                              ),
-                              Text(
-                                orderList[0].method,
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontFamily: 'Poppins',
-                                  color: Color(0xFF666666),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                "Total",
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                  color: Color(0xFF666666),
-                                ),
-                              ),
-                              Text(
-                                "R\$${orderList[0].total.toStringAsFixed(2)}",
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Poppins',
-                                  color: Color(0xFF999999),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   StreamBuilder(
@@ -433,7 +594,6 @@ class _StatusScreenState extends State<StatusScreen> {
         alignment: Alignment.bottomCenter,
         child: SwappinButton(
           onPressed: () {
-            print(orderList[0].productList);
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -579,5 +739,40 @@ class _StatusScreenState extends State<StatusScreen> {
         ],
       );
     }
+  }
+
+  void addMarker(String storePhoto, double storeLatitude, double storeLongitude) async {
+    final Marker marker = Marker(
+      markerId: MarkerId(0.toString()),
+      position: LatLng(storeLatitude, storeLongitude),
+    );
+    markers[MarkerId(0.toString())] = marker;
+  }
+
+  _addPolyLine() {
+    PolylineId id = PolylineId("poly");
+    Polyline polyline = Polyline(
+        polylineId: id,
+      color: Color(0xFF00BFB2),
+      points: polylineCoordinates,
+    );
+    polylines[id] = polyline;
+    setState(() {});
+  }
+
+  Future<void> _getPolylines(double storeLatitude, double storeLongitude) async {
+    List<PointLatLng> result = await polylinePoints.getRouteBetweenCoordinates(
+      googleMapsAPI,
+      latitude,
+      longitude,
+      storeLatitude,
+      storeLongitude,
+    );
+    if (result.isNotEmpty) {
+      result.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+    _addPolyLine();
   }
 }

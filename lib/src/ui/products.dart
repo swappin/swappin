@@ -7,9 +7,8 @@ import 'package:swappin/src/models/product.dart';
 import 'package:swappin/src/ui/home.dart';
 import 'package:swappin/src/ui/customizer.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/widgets/navigation-bar.dart';
-import 'package:swappin/src/ui/widgets/no-stores.dart';
 import 'package:swappin/src/ui/widgets/product-list-item.dart';
 import 'package:swappin/src/ui/widgets/score-stars.dart';
 
@@ -20,6 +19,8 @@ class Products extends StatefulWidget {
   final String delivery;
   final num score;
   final num distance;
+  final double storeLatitude;
+  final double storeLongitude;
 
   Products(
       {Key key,
@@ -28,17 +29,22 @@ class Products extends StatefulWidget {
       this.photo,
       this.delivery,
       this.score,
-      this.distance})
+      this.distance,
+      this.storeLatitude,
+      this.storeLongitude})
       : super(key: key);
 
   @override
   _ProductsState createState() => _ProductsState(
-      store: this.store,
-      adress: this.adress,
-      photo: this.photo,
-      delivery: this.delivery,
-      score: this.score,
-      distance: this.distance);
+        store: this.store,
+        adress: this.adress,
+        photo: this.photo,
+        delivery: this.delivery,
+        score: this.score,
+        distance: this.distance,
+        storeLatitude: this.storeLatitude,
+        storeLongitude: this.storeLongitude,
+      );
 }
 
 class _ProductsState extends State<Products> {
@@ -50,15 +56,20 @@ class _ProductsState extends State<Products> {
   String delivery;
   num score;
   num distance;
+  double storeLatitude;
+  double storeLongitude;
   bool hasPromotion = false;
 
-  _ProductsState(
-      {this.store,
-      this.adress,
-      this.photo,
-      this.delivery,
-      this.score,
-      this.distance});
+  _ProductsState({
+    this.store,
+    this.adress,
+    this.photo,
+    this.delivery,
+    this.score,
+    this.distance,
+    this.storeLatitude,
+    this.storeLongitude,
+  });
 
   @override
   void didChangeDependencies() {
@@ -109,14 +120,17 @@ class _ProductsState extends State<Products> {
               List<DocumentSnapshot> docs = snapshot.data.documents;
               List<Product> productsList = _bloc.mapToList(docList: docs);
               if (productsList.isNotEmpty) {
-                productsList.forEach((data){
-                  if(data.isPromotion){
+                productsList.forEach((data) {
+                  if (data.isPromotion) {
                     hasPromotion = false;
                   }
                 });
                 return buildList(productsList);
               } else {
-                return NoStoresScreen();
+                return EmptyScreen(
+                  message: "Triste, mas não há nada nessa loja.\nExplore a região para encontrar o seu produto.",
+                  image: "products",
+                );
               }
             } else {
               return LoaderScreen();
@@ -189,7 +203,6 @@ class _ProductsState extends State<Products> {
                       children: <Widget>[
                         ScoreStars(score: score),
                         Container(
-                          padding: EdgeInsets.only(top: 10.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
@@ -197,22 +210,24 @@ class _ProductsState extends State<Products> {
                                 opacity: 0.5,
                                 child: Image.asset(
                                   "assets/icons/black/home.png",
-                                  width: 13,
+                                  width: 13.0,
                                 ),
                               ),
                               Container(
-                                width: 4,
+                                width: 4.0,
                               ),
-                              Container(
-                                child: Text(
-                                  '$adress',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                    fontFamily: 'Quicksand',
-                                    color: Color(0x88000000),
+                              Expanded(
+                                child: Container(
+                                  child: Text(
+                                    '$adress',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 12.0,
+                                      fontFamily: 'Quicksand',
+                                      color: Color(0xBB000000),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -226,31 +241,33 @@ class _ProductsState extends State<Products> {
               ],
             ),
           ),
-          hasPromotion != false ?
-          Container() : Column(
-            children: <Widget>[
-              Container(
-                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                 width: double.infinity,
-                 height: 45.0,
-                 child: Text(
-                   "Promoções",
-                   style: TextStyle(
-                     fontSize: 14.0,
-                     fontWeight: FontWeight.bold,
-                     fontFamily: 'Poppins',
-                     color: Color(0xFF444444),
-                   ),
-                 ),
-               ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                height: 180.0,
-                width: double.infinity,
-                child: promotionList(productsList),
-              )
-            ],
-          ),
+          hasPromotion != false
+              ? Container()
+              : Column(
+                  children: <Widget>[
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      width: double.infinity,
+                      height: 45.0,
+                      child: Text(
+                        "Promoções",
+                        style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                          color: Color(0xFF444444),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 15),
+                      height: 180.0,
+                      width: double.infinity,
+                      child: promotionList(productsList),
+                    )
+                  ],
+                ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             width: double.infinity,
@@ -298,6 +315,8 @@ class _ProductsState extends State<Products> {
                             storeAdress: adress,
                             storePhoto: photo,
                             storeScore: score,
+                            storeLatitude: storeLatitude,
+                            storeLongitude: storeLongitude,
                             productName: productsList[index].name,
                             code: productsList[index].code,
                             photo: productsList[index].photo,
@@ -355,6 +374,8 @@ class _ProductsState extends State<Products> {
                     storeAdress: adress,
                     storePhoto: photo,
                     storeScore: score,
+                    storeLatitude: storeLatitude,
+                    storeLongitude: storeLongitude,
                     productName: productsList[index].name,
                     code: productsList[index].code,
                     photo: productsList[index].photo,

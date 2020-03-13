@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swappin/src/ui/bag.dart';
 import 'package:swappin/src/ui/home.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
@@ -39,6 +40,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
     'assets/payments/money.png',
   ];
 
+
+  addStringToSF(String paymentMethod, String paymentThumbnail, String paymentChange) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('paymentMethod', paymentMethod);
+    prefs.setString('paymentThumbnail', paymentThumbnail);
+    prefs.setString('paymentChange', paymentChange);
+  }
   _PaymentScreenState({this.total});
 
   @override
@@ -86,12 +95,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
                 onTap: () {
                   if (paymentMethodList[index] != "Dinheiro") {
+                    addStringToSF(paymentMethodList[index], paymentThumbnailList[index], _controller.text);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BagScreen(
-                          paymentMethod: paymentMethodList[index],
-                          paymentThumbnail: paymentThumbnailList[index],
                         ),
                       ),
                     );
@@ -191,14 +199,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       if(double.parse(_controller.text) <= total){
 
                       }else{
+                        addStringToSF(paymentMethod, paymentThumbnail, _controller.text);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BagScreen(
-                              paymentMethod: paymentMethod,
-                              paymentThumbnail: paymentThumbnail,
-                              paymentChange: double.parse(_controller.text).toStringAsFixed(2),
-                            ),
+                            builder: (context) => BagScreen(),
                           ),
                         );
                       }
@@ -223,13 +228,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     child: Center(
                       child: FlatButton(
                         onPressed: () {
+                          addStringToSF(paymentMethod, paymentThumbnail, _controller.text);
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => BagScreen(
-                                paymentMethod: paymentMethod,
-                                paymentThumbnail: paymentThumbnail,
-                                paymentChange: double.parse(_controller.text).toStringAsFixed(2),
                               ),
                             ),
                           );

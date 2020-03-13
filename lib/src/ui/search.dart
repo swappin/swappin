@@ -6,6 +6,7 @@ import 'package:swappin/src/blocs/products_bloc_provider.dart';
 import 'package:swappin/src/models/product.dart';
 import 'package:swappin/src/ui/customizer.dart';
 import 'package:swappin/src/ui/products.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/widgets/navigation-bar.dart';
 import 'package:swappin/src/ui/widgets/search-list-item.dart';
 import 'package:diacritic/diacritic.dart';
@@ -161,10 +162,16 @@ class _SearchListState extends State<SearchScreen> {
                         //storesList.sort((a, b) => a.meters.compareTo(b.meters));
                         return buildList(productList);
                       } else {
-                        return Text("Nenhssssssuma loja próxima ou aberta.");
+                        return EmptyScreen(
+                          message: "Que bad, não há nada por aqui!",
+                          image: "products",
+                        );
                       }
                     } else {
-                      return Text("Nenhuma loja próxima ou aberta.");
+                      return EmptyScreen(
+                        message: "Que bad, não há nada por aqui!",
+                        image: "products",
+                      );
                     }
                   },
                 ),

@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:swappin/src/app.dart';
 import 'package:swappin/src/blocs/login_bloc_provider.dart';
-import 'package:swappin/src/initial.dart';
 import 'package:swappin/src/models/user.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
-import 'package:swappin/src/ui/widgets/no-stores.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
 
 class DeleteAccount extends StatefulWidget {
@@ -71,7 +70,10 @@ class _DeleteAccountState extends State<DeleteAccount> {
                 print(userData[0].name);
                 return buildDeleteForm(userData);
               } else {
-                return NoStoresScreen();
+                return EmptyScreen(
+                  message: "Sentimos muito, mas algo de errado aconteceu!",
+                  image: "internet",
+                );
               }
             } else {
               return LoaderScreen();

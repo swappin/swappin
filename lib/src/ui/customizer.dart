@@ -12,6 +12,8 @@ class CustomizerScreen extends StatefulWidget {
   final String storeAdress;
   final String storePhoto;
   final double storeScore;
+  final double storeLatitude;
+  final double storeLongitude;
   final String productName;
   final String userName;
   final String code;
@@ -21,38 +23,41 @@ class CustomizerScreen extends StatefulWidget {
   final num promotionPrice;
   final bool isPromotion;
 
-  CustomizerScreen(
-      {Key key,
-      @required this.storeName,
-      this.storeAdress,
-      this.storePhoto,
-      this.storeScore,
-      this.productName,
-      this.userName,
-      this.code,
-      this.photo,
-      this.description,
-      this.price,
-      this.promotionPrice,
-        this.isPromotion,
-      })
-      : super(key: key);
+  CustomizerScreen({
+    Key key,
+    @required this.storeName,
+    this.storeAdress,
+    this.storePhoto,
+    this.storeScore,
+    this.storeLatitude,
+    this.storeLongitude,
+    this.productName,
+    this.userName,
+    this.code,
+    this.photo,
+    this.description,
+    this.price,
+    this.promotionPrice,
+    this.isPromotion,
+  }) : super(key: key);
 
   @override
   _CustomizerScreenState createState() => _CustomizerScreenState(
-      storeName: this.storeName,
-      storeAdress: this.storeAdress,
-      storePhoto: this.storePhoto,
-      storeScore: this.storeScore,
-      productName: this.productName,
-      code: this.code,
-      photo: this.photo,
-      userName: this.userName,
-      description: this.description,
-      price: this.price,
-      promotionPrice: this.promotionPrice,
-    isPromotion: this.isPromotion,
-  );
+        storeName: this.storeName,
+        storeAdress: this.storeAdress,
+        storePhoto: this.storePhoto,
+        storeScore: this.storeScore,
+        storeLatitude: this.storeLatitude,
+        storeLongitude: this.storeLongitude,
+        productName: this.productName,
+        code: this.code,
+        photo: this.photo,
+        userName: this.userName,
+        description: this.description,
+        price: this.price,
+        promotionPrice: this.promotionPrice,
+        isPromotion: this.isPromotion,
+      );
 }
 
 class _CustomizerScreenState extends State<CustomizerScreen> {
@@ -64,6 +69,8 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
   String storeAdress;
   String storePhoto;
   double storeScore;
+  double storeLatitude;
+  double storeLongitude;
   String productName;
   String code;
   String photo;
@@ -82,6 +89,8 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
     this.storeAdress,
     this.storePhoto,
     this.storeScore,
+    this.storeLatitude,
+    this.storeLongitude,
     this.productName,
     this.code,
     this.photo,
@@ -115,12 +124,14 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
   }
 
   addStringToSF(String storeName, String storeAdress, String storePhoto,
-      double storeScore) async {
+      double storeScore, double storeLatitude, double storeLongitude) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('storeName', storeName);
     prefs.setString('storeAdress', storeAdress);
     prefs.setString('storePhoto', storePhoto);
     prefs.setDouble('storeScore', storeScore);
+    prefs.setDouble('storeLatitude', storeLatitude);
+    prefs.setDouble('storeLongitude', storeLongitude);
   }
 
   getStringValuesSF() async {
@@ -132,6 +143,9 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
   void initState() {
     super.initState();
     getStringValuesSF();
+
+    print("qqqqqqqqqqqqqqq111111HUSAHUHASUHASU AWAY $storeLatitude");
+    print("qqqqqqqqqq111AWEWYYWYWYWYW $storeLongitude");
   }
 
   @override
@@ -155,152 +169,155 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
       key: _scaffoldKey,
       body: Container(
         color: Colors.white,
-        child: ListView(
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                this._backgroundImage(),
-                Positioned(
-                  child: AppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0.0,
-                    leading: FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Image.asset(
-                        "assets/icons/white/arrow_left_1.png",
-                        width: 10.0,
-                      ),
-                    ),
-                    title: Text(
-                      storeName,
-                      style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins',
-                          color: Colors.white),
-                    ),
-                    centerTitle: true,
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              padding: EdgeInsets.all(15),
-              child: Column(
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Stack(
                 children: <Widget>[
-                  Container(
-                    height: 30,
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      productName,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                        color: Color(0xFF444444),
+                  this._backgroundImage(),
+                  Positioned(
+                    child: AppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0.0,
+                      leading: FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Image.asset(
+                          "assets/icons/white/arrow_left_1.png",
+                          width: 10.0,
+                        ),
                       ),
-                    ),
-                  ),
-                  Container(
-                    height: 30,
-                    alignment: Alignment.topLeft,
-                    child: isPromotion ? Row(
-                      children: <Widget>[
-                        Text(
-                          "R\$${promotionPrice.toStringAsFixed(2).toString()}  ",
-                          style: TextStyle(
-                            fontSize: 14,
+                      title: Text(
+                        storeName,
+                        style: TextStyle(
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Poppins',
-                            color: Color(0xFF00BFB2),
-                          ),
-                        ),
-                        Text(
-                          "R\$${price.toStringAsFixed(2).toString()}",
-                          style: TextStyle(
-                            fontSize: 14,
-
-                            decoration: TextDecoration.lineThrough,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Poppins',
-                            color: Color(0xFFAAAAAA),
-                          ),
-                        ),
-                      ],
-                    ) : Text(
-                      "R\$${price.toStringAsFixed(2).toString()}",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                        color: Color(0xFF00BFB2),
+                            color: Colors.white),
                       ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 20.0),
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      description,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Quicksand',
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 160,
-                    alignment: Alignment.topLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          height: 30,
-                          child: Text(
-                            "Observação:",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Poppins',
-                              color: Color(0xFF444444),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          height: 120,
-                          padding: EdgeInsets.only(bottom: 10),
-                          child: TextField(
-                            controller: _noteController,
-                            maxLengthEnforced: false,
-                            maxLines: 10,
-                            decoration: InputDecoration(
-                              fillColor: Colors.white,
-                              filled: true,
-                              hintText: "Faça uma observação...",
-                              enabledBorder: const OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                    color: Colors.grey, width: 0.0),
-                              ),
-                              hintStyle: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Quicksand',
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      centerTitle: true,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
+              Container(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: 30,
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        productName,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                          color: Color(0xFF444444),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 30,
+                      alignment: Alignment.topLeft,
+                      child: isPromotion
+                          ? Row(
+                              children: <Widget>[
+                                Text(
+                                  "R\$${promotionPrice.toStringAsFixed(2).toString()}  ",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFF00BFB2),
+                                  ),
+                                ),
+                                Text(
+                                  "R\$${price.toStringAsFixed(2).toString()}",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    decoration: TextDecoration.lineThrough,
+                                    fontWeight: FontWeight.w500,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFFAAAAAA),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Text(
+                              "R\$${price.toStringAsFixed(2).toString()}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                                color: Color(0xFF00BFB2),
+                              ),
+                            ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 20.0),
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        description,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Quicksand',
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 160,
+                      alignment: Alignment.topLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            height: 30,
+                            child: Text(
+                              "Observação:",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                                color: Color(0xFF444444),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 120,
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: TextField(
+                              controller: _noteController,
+                              maxLengthEnforced: false,
+                              maxLines: 10,
+                              decoration: InputDecoration(
+                                fillColor: Colors.white,
+                                filled: true,
+                                hintText: "Faça uma observação...",
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                      color: Colors.grey, width: 0.0),
+                                ),
+                                hintStyle: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Quicksand',
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Container(
@@ -392,18 +409,21 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                           storeAdress,
                           storePhoto,
                           storeScore,
-                            productName,
-                            _noteController.text,
-                            photo,
-                            isPromotion ? promotionPrice.toDouble() : price.toDouble(),
-                            amount,
+                          productName,
+                          _noteController.text,
+                          photo,
+                          isPromotion
+                              ? promotionPrice.toDouble()
+                              : price.toDouble(),
+                          amount,
                         );
                         Navigator.pop(context);
                       } else {
                         showMenu();
                       }
                     } else {
-                      addStringToSF(storeName, storeAdress, storePhoto, storeScore);
+                      addStringToSF(storeName, storeAdress, storePhoto,
+                          storeScore, storeLatitude, storeLongitude);
                       _bagBloc.submitToBag(
                         storeName,
                         storeAdress,
@@ -412,7 +432,9 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                         productName,
                         _noteController.text,
                         photo,
-                        isPromotion ? promotionPrice.toDouble() : price.toDouble(),
+                        isPromotion
+                            ? promotionPrice.toDouble()
+                            : price.toDouble(),
                         amount,
                       );
                       Navigator.pop(context);
@@ -434,7 +456,9 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                         ),
                         Expanded(
                           child: Text(
-                            isPromotion ? "R\$${(amount * promotionPrice).toStringAsFixed(2)}" : "R\$${(amount * price).toStringAsFixed(2)}",
+                            isPromotion
+                                ? "R\$${(amount * promotionPrice).toStringAsFixed(2)}"
+                                : "R\$${(amount * price).toStringAsFixed(2)}",
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -496,17 +520,20 @@ class _CustomizerScreenState extends State<CustomizerScreen> {
                   ),
                   SwappinButton(
                     onPressed: () {
-                      addStringToSF(storeName, storeAdress, storePhoto, storeScore);
+                      addStringToSF(storeName, storeAdress, storePhoto,
+                          storeScore, storeLatitude, storeLongitude);
                       _bagBloc.clearBag(
-                        storeName,
-                        storeAdress,
-                        storePhoto,
-                        storeScore,
-                        productName,
-                        _noteController.text,
-                        photo,
-                        isPromotion ? promotionPrice.toDouble() : price.toDouble(),
-                        amount);
+                          storeName,
+                          storeAdress,
+                          storePhoto,
+                          storeScore,
+                          productName,
+                          _noteController.text,
+                          photo,
+                          isPromotion
+                              ? promotionPrice.toDouble()
+                              : price.toDouble(),
+                          amount);
                       Navigator.pop(context);
                       Navigator.pop(context);
                     },

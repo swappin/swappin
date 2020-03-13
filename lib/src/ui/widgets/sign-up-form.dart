@@ -142,6 +142,7 @@ class SignUpFormState extends State<SignUpForm> {
                 width: double.infinity,
                 child: FlatButton(
                   onPressed: () => _selectDate(context),
+                  child: Container(),
                 ),
               ),
             ],
@@ -364,13 +365,11 @@ class SignUpFormState extends State<SignUpForm> {
           if (_bloc.validateFieldsRegister(_birth, _genre) &&
               _bloc.validateConfirmPasswordFields()) {
             registerUser();
-            print("TÁ TUDO OK NO CADASTRO");
           } else {
             if (_bloc.validateFieldsRegister(_birth, _genre) != true)
               _errorMessage = _bloc.errorValidateField();
             else if (_bloc.validateConfirmPasswordFields() != true)
               _errorMessage = _bloc.errorPasswordConfirm();
-            print("PTEM PROBLEMAS NO CADASTRO $_errorMessage");
             showErrorMessage();
           }
         },

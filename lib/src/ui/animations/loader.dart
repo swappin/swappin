@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:swappin/src/ui/widgets/no-internet.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 
 class LoaderScreen extends StatefulWidget {
   @override
@@ -24,7 +24,14 @@ class _LoaderScreenState extends State<LoaderScreen> {
         milliseconds: 4600,
       )).then((onLoaded) {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => NoInternetScreen()));
+          MaterialPageRoute(
+            builder: (context) => EmptyScreen(
+              message:
+                  "Ooops, parece que você está sem conexão!\nTente novamente...",
+              image: "internet",
+            ),
+          ),
+        );
       });
     }
   }

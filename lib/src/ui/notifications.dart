@@ -6,7 +6,7 @@ import 'package:swappin/src/models/order.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
 import 'package:swappin/src/ui/historic.dart';
 import 'package:swappin/src/ui/status.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/widgets/notification-list-item.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -105,7 +105,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     .sort((b, a) => a.finalDate.compareTo(b.finalDate));
                 return buildList(statusListener);
               } else {
-                return NoProductsScreen();
+                return EmptyScreen(
+                  message: "Ooops, não há nada por aqui!\nAcho que é hora de fazer umas comprinhas, né?",
+                  image: "stores",
+                );
               }
             } else {
               return LoaderScreen();

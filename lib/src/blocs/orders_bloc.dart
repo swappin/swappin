@@ -16,6 +16,8 @@ class OrdersBloc {
       String storeAdress,
       String storePhoto,
       num storeScore,
+      double storeLatitude,
+      double storeLongitude,
     String code,
     List<dynamic> products,
     List<dynamic> prices,
@@ -32,6 +34,8 @@ class OrdersBloc {
       storeAdress,
       storePhoto,
       storeScore,
+      storeLatitude,
+      storeLongitude,
       code,
       products,
       prices,
@@ -92,6 +96,10 @@ class OrdersBloc {
     return _repository.getNotifications();
   }
 
+  Stream<QuerySnapshot> getOrderStatus(String code){
+    return _repository.getOrderStatus(code);
+  }
+
   Stream<QuerySnapshot> userHistoric() {
     return _repository.userHistoric();
   }
@@ -105,6 +113,8 @@ class OrdersBloc {
         String storeAdress = document.data['storeAdress'];
         String storePhoto = document.data['storePhoto'];
         num storeScore = document.data['storeScore'];
+        double storeLatitude = document.data['storeLatitude'];
+        double storeLongitude = document.data['storeLongitude'];
         String status = document.data['status'];
         String code = document.data['code'];
         String photo = document.data['photo'];
@@ -122,6 +132,8 @@ class OrdersBloc {
             storeAdress,
             storePhoto,
             storeScore,
+            storeLatitude,
+            storeLongitude,
             status,
             code,
             photo,

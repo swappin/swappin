@@ -12,7 +12,6 @@ import 'package:swappin/src/models/bag.dart';
 import 'package:swappin/src/models/order.dart';
 import 'package:swappin/src/ui/bag.dart';
 import 'package:swappin/src/ui/home.dart';
-import 'package:swappin/src/ui/map.dart';
 import 'package:swappin/src/ui/notifications.dart';
 import 'package:swappin/src/ui/transformers/category-transformer.dart';
 
@@ -31,18 +30,22 @@ class _NavigationBarState extends State<NavigationBar> {
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _screenNavigator = <Widget>[
     categoryNavigator(),
-    MapScreen(),
     BagScreen(),
     NotificationScreen(),
   ];
 
   _bagCounter(int bagNumber) {
     if (bagNumber == 0) {
-      return Opacity(
+      return currentIndex == 1
+          ? Image.asset(
+        "assets/icons/gradient/bag.png",
+        width: 19.0,
+      )
+          : Opacity(
         opacity: 0.5,
         child: Image.asset(
           "assets/icons/black/bag.png",
-          width: 20.0,
+          width: 19.0,
         ),
       );
     } else {
@@ -57,11 +60,16 @@ class _NavigationBarState extends State<NavigationBar> {
             fontFamily: 'Poppins',
           ),
         ),
-        child: Opacity(
+        child: currentIndex == 1
+            ? Image.asset(
+          "assets/icons/gradient/bag.png",
+          width: 19.0,
+        )
+            : Opacity(
           opacity: 0.5,
           child: Image.asset(
             "assets/icons/black/bag.png",
-            width: 20.0,
+            width: 19.0,
           ),
         ),
       );
@@ -70,11 +78,16 @@ class _NavigationBarState extends State<NavigationBar> {
 
   _notificationCounter(int notificationNumber) {
     if (notificationNumber == 0) {
-      return Opacity(
+      return currentIndex == 2
+          ? Image.asset(
+        "assets/icons/gradient/clock.png",
+        width: 19.0,
+      )
+          : Opacity(
         opacity: 0.5,
         child: Image.asset(
           "assets/icons/black/clock.png",
-          width: 20.0,
+          width: 19.0,
         ),
       );
     } else {
@@ -89,16 +102,22 @@ class _NavigationBarState extends State<NavigationBar> {
             fontFamily: 'Poppins',
           ),
         ),
-        child: Opacity(
+        child: currentIndex == 2
+            ? Image.asset(
+          "assets/icons/gradient/clock.png",
+          width: 19.0,
+        )
+            : Opacity(
           opacity: 0.5,
           child: Image.asset(
             "assets/icons/black/clock.png",
-            width: 20.0,
+            width: 19.0,
           ),
         ),
       );
     }
   }
+
 
   @override
   void didChangeDependencies() {
@@ -128,54 +147,19 @@ class _NavigationBarState extends State<NavigationBar> {
       elevation: 0.0,
       items: [
         BottomNavigationBarItem(
-          icon: Opacity(
+          icon: currentIndex == 0
+              ? Image.asset(
+            "assets/icons/gradient/home.png",
+            width: 19.0,
+          )
+              : Opacity(
             opacity: 0.5,
             child: Image.asset(
               "assets/icons/black/home.png",
-              width: 18.0,
+              width: 19.0,
             ),
           ),
-          activeIcon: Opacity(
-            opacity: 1.0,
-            child: Image.asset(
-              "assets/icons/gradient/home.png",
-              width: 18.0,
-            ),
-          ),
-          title: Text(
-            'Home',
-            style: TextStyle(
-              fontSize: 12.0,
-              fontFamily: 'Poppins',
-            ),
-          ),
-        ),
-        BottomNavigationBarItem(
-          icon: Padding(padding: EdgeInsets.only(bottom: 4.0),
-            child: Opacity(
-              opacity: 0.5,
-              child: Image.asset(
-                "assets/icons/black/pin_sharp_circle.png",
-                width: 18.0,
-              ),
-            ),
-          ),
-          activeIcon: Padding(padding: EdgeInsets.only(bottom: 4.0),
-            child: Opacity(
-              opacity: 1.0,
-              child: Image.asset(
-                "assets/icons/gradient/pin.png",
-                width: 18.0,
-              ),
-            ),
-          ),
-          title: Text(
-            'Mapa',
-            style: TextStyle(
-              fontSize: 12.0,
-              fontFamily: 'Poppins',
-            ),
-          ),
+          title: Container(),
         ),
         BottomNavigationBarItem(
           icon: StreamBuilder(
@@ -198,13 +182,11 @@ class _NavigationBarState extends State<NavigationBar> {
               }
             },
           ),
-          title: Text(
-            "Sacola",
-            style: TextStyle(
-              fontSize: 12.0,
-              fontFamily: 'Poppins',
-            ),
+          activeIcon: Image.asset(
+            "assets/icons/gradient/home.png",
+            width: 20.0,
           ),
+          title: Container(),
         ),
         BottomNavigationBarItem(
           icon: StreamBuilder(
@@ -227,13 +209,7 @@ class _NavigationBarState extends State<NavigationBar> {
               }
             },
           ),
-          title: Text(
-            "Notificações",
-            style: TextStyle(
-              fontSize: 12.0,
-              fontFamily: 'Poppins',
-            ),
-          ),
+          title: Container(),
         ),
       ],
     );

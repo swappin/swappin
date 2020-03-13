@@ -22,7 +22,7 @@ class StoresBloc {
   final _description = BehaviorSubject<String>();
   final _showProgress = BehaviorSubject<bool>();
   final Distance distance = Distance();
-  double range = 2500.0;
+  double range = 100000;
 
 //  void submit() {
 //    _showProgress.sink.add(true);

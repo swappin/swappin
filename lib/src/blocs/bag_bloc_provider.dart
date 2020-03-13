@@ -8,6 +8,7 @@ class BagBlocProvider extends InheritedWidget{
   bool updateShouldNotify(_) => true;
 
   static BagBloc of(BuildContext context) {
-    return (context.inheritFromWidgetOfExactType(BagBlocProvider) as BagBlocProvider).bloc;
+    return (context.dependOnInheritedWidgetOfExactType<BagBlocProvider>()).bloc;
+
   }
 }

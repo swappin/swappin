@@ -24,7 +24,7 @@ class _TutorialState extends State<Tutorial> {
   String photoURL;
   String _animation = "normal";
   String _tutorialTitle = "Explore a sua região";
-  String _tutorialDescription = "Lorem ipsum que se foda";
+  String _tutorialDescription = "Veja lojas e produtos ao seu redor";
   String _stepText = "Avançar";
 
   _tutorialAnimation(int index) {
@@ -119,7 +119,7 @@ class _TutorialState extends State<Tutorial> {
                                 _animation = "filter";
                               } else if (_animation == "filter") {
                                 _tutorialTitle = "Faça check-in";
-                                _tutorialDescription = "E acesse todos os produtos";
+                                _tutorialDescription = "E acesse o catálogo";
                                 _animation = "acess";
                               } else if (_animation == "acess") {
                                 _tutorialTitle = "Compre com tranquilidade";

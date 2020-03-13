@@ -162,6 +162,7 @@ class SignUpSocialState extends State<SignUpSocial> {
                 width: double.infinity,
                 child: FlatButton(
                   onPressed: () => _selectDate(context),
+                  child: Container()
                 ),
               ),
             ],

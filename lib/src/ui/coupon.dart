@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:swappin/src/blocs/coupon_bloc.dart';
 import 'package:swappin/src/blocs/coupon_bloc_provider.dart';
 import 'package:swappin/src/models/coupon.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
+import 'package:swappin/src/ui/animations/loader.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 
 class CouponScreen extends StatefulWidget {
   @override
@@ -58,10 +59,13 @@ class _CouponScreenState extends State<CouponScreen> {
               if (couponList.isNotEmpty) {
                 return buildList(couponList);
               } else {
-                return NoProductsScreen();
+                return EmptyScreen(
+                  message: "Que bad, não há nada por aqui!",
+                  image: "products",
+                );
               }
             } else {
-              return Text("Nenhum pedido realizado.");
+              return LoaderScreen();
             }
           },
         ),

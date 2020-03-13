@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:location/location.dart';
+import 'package:swappin/main.dart';
 import 'package:swappin/src/app.dart';
 import 'package:swappin/src/ui/products.dart';
-import 'package:swappin/src/ui/search.dart';
-import 'package:swappin/src/ui/widgets/no-stores.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
-import 'package:swappin/src/ui/widgets/no-stores.dart';
 import 'package:swappin/src/ui/widgets/store-list-item.dart';
 import 'package:swappin/src/ui/widgets/swappin-icon.dart';
 import '../blocs/stores_bloc_provider.dart';
@@ -40,10 +43,60 @@ class _StoreListState extends State<StoreListscreen> {
   String cover;
   List subcategories;
   List<Color> colorList = [];
-  TextEditingController _controller = TextEditingController();
+
+
+
+  LocationData _startLocation;
+  LocationData _currentLocation;
+
+  StreamSubscription<LocationData> _locationSubscription;
+
+  Location _location = new Location();
+
+  bool _permission = false;
+  String error;
+
 
   _StoreListState({this.category, this.cover, this.subcategories});
+// Platform messages are asynchronous, so we initialize in an async method.
+  getCurrentLocation() async {
+    LocationData location;
+    // Platform messages may fail, so we use a try/catch PlatformException.
 
+    try {
+      location = await _location.getLocation();
+      _permission = await _location.hasPermission();
+
+      _locationSubscription =
+          _location.onLocationChanged().listen((LocationData result) {
+            setState(() {
+              _currentLocation = result;
+              latitude = result.latitude;
+              longitude = result.longitude;
+            });
+          });
+      error = null;
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        error = 'Permission denied';
+      } else if (e.code == 'PERMISSION_DENIED_NEVER_ASK') {
+        error =
+        'Permission denied - please ask the user to enable it from the app settings';
+      }
+      location = null;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    //if (!mounted) return;
+
+    setState(() {
+      _startLocation = location;
+      latitude = location.latitude;
+      longitude = location.longitude;
+    });
+  }
   @override
   void initState() {
     super.initState();
@@ -53,6 +106,14 @@ class _StoreListState extends State<StoreListscreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _bloc = StoresBlocProvider.of(context);
+    location.onLocationChanged().listen((LocationData currentLocation) {
+      setState(() {
+        latitude =
+        currentLocation != null ? currentLocation.latitude : -23.534600;
+        longitude =
+        currentLocation != null ? currentLocation.longitude : -23.534600;
+      });
+    });
   }
 
   @override
@@ -79,7 +140,10 @@ class _StoreListState extends State<StoreListscreen> {
               if (!storesList.contains(subcategory)) {
                 return buildList(storesList);
               }
-              return NoStoresScreen();
+              return EmptyScreen(
+                message: "Que pena, não há nada próximo ou aberto!",
+                image: "products",
+              );
             }
           } else {
             return LoaderScreen();
@@ -94,62 +158,6 @@ class _StoreListState extends State<StoreListscreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            margin: EdgeInsets.symmetric(vertical: 15),
-            child: Container(
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x11135252),
-                      blurRadius: 15,
-                      spreadRadius: 0,
-                      offset: Offset(
-                        0.0,
-                        0.0,
-                      ),
-                    )
-                  ],
-                  border: Border.all(
-                    color: Color(0xFFE5E9E9),
-                    width: 1,
-                  )),
-              padding: EdgeInsets.fromLTRB(20, 0, 5, 0),
-              child: TextField(
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                SearchScreen(filter: _controller.text),
-                          ));
-                    },
-                    icon: Opacity(
-                      opacity: 0.65,
-                      child: Image.asset(
-                        "assets/icons/black/search.png",
-                        width: 16,
-                      ),
-                    ),
-                  ),
-                  hintText: "Qual produto deseja?",
-                  border: InputBorder.none,
-                ),
-                controller: _controller,
-                cursorColor: Color(0xFF00BFB2),
-                style: TextStyle(
-                  color: Color(0xFF00BFB2),
-                ),
-                cursorWidth: 3.0,
-              ),
-            ),
-          ),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 15),
             child: Container(
@@ -269,7 +277,6 @@ class _StoreListState extends State<StoreListscreen> {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: storesList.length,
       itemBuilder: (BuildContext context, int index) {
-        print(storesList[index].meters);
         if (userRange > storesList[index].meters.floor()) {
           return Column(
             children: <Widget>[
@@ -296,6 +303,8 @@ class _StoreListState extends State<StoreListscreen> {
                           delivery: storesList[index].delivery,
                           score: storesList[index].score,
                           distance: storesList[index].meters,
+                          storeLatitude: storesList[index].latitude,
+                          storeLongitude: storesList[index].longitude,
                         ),
                       ),
                     );
@@ -341,7 +350,6 @@ class _StoreListState extends State<StoreListscreen> {
         return FlatButton(
           padding: EdgeInsets.only(right: 8),
           onPressed: () {
-            print(isSubcategory);
             if (!isSubcategory) {
               subcategory = subcategories[index];
             } else {

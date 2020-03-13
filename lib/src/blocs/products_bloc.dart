@@ -59,25 +59,23 @@ class ProductsBloc {
           LatLng(latitude, longitude),
           LatLng(geoPoint.latitude, geoPoint.longitude),
         );
-        if (productDistance <= range) {
-          Product productsList = Product(
-            name,
-            code,
-            photo,
-            description,
-            storeName,
-            storeAdress,
-            storePhoto,
-            storeScore,
-            productDistance,
-            price,
-            promotionPrice,
-            isPromotion,
-            isEnable,
-            productKeywords,
-          );
-          productList.add(productsList);
-        }
+        Product productsList = Product(
+          name,
+          code,
+          photo,
+          description,
+          storeName,
+          storeAdress,
+          storePhoto,
+          storeScore,
+          productDistance,
+          price,
+          promotionPrice,
+          isPromotion,
+          isEnable,
+          productKeywords,
+        );
+        productList.add(productsList);
       });
       return productList;
     } else {

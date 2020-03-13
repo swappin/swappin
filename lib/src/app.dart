@@ -1,18 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong/latlong.dart';
-import 'package:location/location.dart';
 import 'package:swappin/main.dart';
 import 'package:swappin/src/blocs/stores_bloc_provider.dart';
-import 'package:swappin/src/models/order.dart';
 import 'package:swappin/src/models/store.dart';
 import 'package:swappin/src/ui/check-in.dart';
 import 'package:swappin/src/ui/home.dart';
-import 'package:swappin/src/ui/widgets/no-internet.dart';
-import 'package:swappin/src/ui/widgets/no-stores.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
-import 'package:swappin/src/utils/strings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
@@ -35,21 +30,31 @@ class _AppState extends State<App> {
   void getCurrentUser() async {
     user = await _auth.currentUser();
     final result = await InternetAddress.lookup('www.google.com');
-    if (result.isNotEmpty &&
-        result[0].rawAddress.isNotEmpty &&
-        user.isAnonymous != true) {
-      var document = await Firestore.instance
-          .collection('users')
-          .document(user.email)
-          .get()
-          .then((userData) {
-        setState(() {
-          currentUserUID = user.uid;
-          currentUserName = userData['name'];
-          currentUserEmail = userData['email'];
-          currentUserPhoto = userData['photo'];
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      if (user.isAnonymous != true) {
+        await Firestore.instance
+            .collection('users')
+            .document(user.email)
+            .get()
+            .then((userData) {
+          setState(() {
+            currentUserUID = user.uid;
+            currentUserName = userData['name'];
+            currentUserEmail = userData['email'];
+            currentUserPhoto = userData['photo'];
+          });
         });
-      });
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EmptyScreen(
+              message: "Sentimos muito, mas algo de errado aconteceu!",
+              image: "internet",
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -66,7 +71,7 @@ class _AppState extends State<App> {
     getStringValuesSF();
     getCurrentUser();
     latitude = latitude != null ? latitude : -23.534600;
-    longitude = longitude != null  ? longitude : -46.531828;
+    longitude = longitude != null ? longitude : -46.531828;
   }
 
   @override
@@ -83,7 +88,6 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    print(currentUserEmail);
     return StreamBuilder(
       stream: _storesBloc.searchList(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -94,7 +98,10 @@ class _AppState extends State<App> {
             storesList.sort((a, b) => a.meters.compareTo(b.meters));
             return homeBuider(storesList);
           } else {
-            return NoInternetScreen();
+            return EmptyScreen(
+              message: "Eita, sua sacaola está vazia!\nBora fazer umas comprinhas?",
+              image: "stores",
+            );
           }
         } else {
           return LoaderScreen();

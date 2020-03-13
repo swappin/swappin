@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swappin/src/app.dart';
 import 'package:swappin/src/ui/notifications.dart';
 import 'package:swappin/src/ui/status.dart';
 
@@ -90,7 +91,15 @@ class NotificationListItem extends StatelessWidget {
                                   color: Colors.black,
                                 ),
                                 children: <TextSpan>[
-                                  TextSpan(text: "Oi, neném! 🤩 Seu pedido "),
+                                  TextSpan(text: "Muito obrigado, "),
+                                  currentUserName != null
+                                      ? TextSpan(
+                                          text: currentUserName.split(" ")[0],
+                                          style: new TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      : null,
+                                  TextSpan(text: "! 🤩 Seu pedido "),
                                   TextSpan(
                                       text:
                                           "${amountList[0]}x ${productsList[0]}",
@@ -118,10 +127,17 @@ class NotificationListItem extends StatelessWidget {
                                   color: Colors.black,
                                 ),
                                 children: <TextSpan>[
-                                  TextSpan(text: "Oi, neném! 🤩"),
+                                  TextSpan(text: "Muito obrigado, "),
+                                  currentUserName != null
+                                      ? TextSpan(
+                                    text: currentUserName.split(" ")[0],
+                                    style: new TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                      : null,
                                   TextSpan(
                                       text:
-                                          " Seus pedidos foram enviados e estão aguardando confirmação de "),
+                                          "! 🤩 Seus pedidos foram enviados e estão aguardando confirmação de "),
                                   TextSpan(
                                       text: "$storeName.",
                                       style: new TextStyle(
@@ -232,7 +248,7 @@ class NotificationListItem extends StatelessWidget {
                           children: <TextSpan>[
                             TextSpan(
                                 text:
-                                    "Pedido aceito! Aguarde que tudo está sendo preparado por "),
+                                    "Pedido aceito! 🥳 Aguarde que tudo está sendo preparado por "),
                             TextSpan(
                                 text: "$storeName. 🤙",
                                 style:
@@ -343,7 +359,7 @@ class NotificationListItem extends StatelessWidget {
                           ),
                           children: <TextSpan>[
                             TextSpan(
-                                text: "Hey coisa linda, prontinho! 😍",
+                                text: "Prontinho! 😍",
                                 style:
                                     new TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(text: " Tudo foi preparado por "),
@@ -353,7 +369,7 @@ class NotificationListItem extends StatelessWidget {
                                     new TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(
                                 text:
-                                    " Não esqueça de avaliar sua experiência."),
+                                    " Não esqueça de avaliar sua experiência. 😘"),
                           ],
                         ),
                       ),

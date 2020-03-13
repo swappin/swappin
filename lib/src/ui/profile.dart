@@ -19,8 +19,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:swappin/src/ui/widgets/swappin-icon.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-
 class Profile extends StatefulWidget {
   @override
   _ProfileState createState() => _ProfileState();
@@ -31,6 +29,7 @@ class _ProfileState extends State<Profile> {
   RangeValues _values = RangeValues(100, 2500);
   static List<String> userInitials = currentUserName.split(" ");
   String initialLetter = userInitials[0][0].toUpperCase();
+  String _adress;
 
   LocationData _startLocation;
   LocationData _currentLocation;
@@ -61,9 +60,19 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  Future<String> _getAddress() async {
+    List<Placemark> placemarks =
+        await Geolocator().placemarkFromCoordinates(latitude, longitude);
+    if (placemarks != null && placemarks.isNotEmpty) {
+      final Placemark pos = placemarks[0];
+      setState(() {
+        _adress = pos.thoroughfare + ', ' + pos.locality;
+      });
+    }
+  }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  initPlatformState() async {
+  getCurrentLocation() async {
     LocationData location;
     // Platform messages may fail, so we use a try/catch PlatformException.
 
@@ -87,7 +96,6 @@ class _ProfileState extends State<Profile> {
         error =
             'Permission denied - please ask the user to enable it from the app settings';
       }
-
       location = null;
     }
 
@@ -103,29 +111,30 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
-
-    initPlatformState();
-    if(userRange == null ){
+    _getAddress();
+    getCurrentLocation();
+    if (userRange == null) {
       userRange = 2500;
       addStringToSF(2500);
-    };
-    print("OH shit!");
+    }
+    ;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _bloc = UserBlocProvider.of(context);
+
     location.onLocationChanged().listen((LocationData currentLocation) {
       setState(() {
         latitude =
             currentLocation != null ? currentLocation.latitude : -23.534600;
         longitude =
             currentLocation != null ? currentLocation.longitude : -23.534600;
+        _getAddress();
       });
     });
   }
@@ -258,23 +267,59 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
               ),
-              StreamBuilder(
-                stream: _bloc.getCurrentUser(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    List<DocumentSnapshot> docs = snapshot.data.documents;
-                    List<User> userData = _bloc.mapToList(docList: docs);
-                    if (userData.isNotEmpty) {
-                      return rangeValue(userData);
-                    } else {
-                      print(user.email);
-                      return RangeError();
-                    }
-                  } else {
-                    return Text("Nenhum produto encontrado.");
-                  }
-                },
+              Container(
+                padding: EdgeInsets.all(15.0),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color(0xFFE8E8E8),
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                              "Quero me deslocar:",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12.0,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "${userRange.toInt().toString()}m",
+                            style: const TextStyle(
+                              color: Color(0xFF00BFB2),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14.0,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Slider.adaptive(
+                      activeColor: Color(0xFF00BFB2),
+                      value: userRange != null ? userRange.toDouble() : 2500,
+                      onChanged: (double range) {
+                        setState(() {
+                          updateRange(range.toInt());
+                        });
+                      },
+                      min: 100,
+                      max: 2500,
+                      divisions: 48,
+                      label: "${userRange.toInt().toString()}m",
+                    ),
+                  ],
+                ),
               ),
               GestureDetector(
                 onTap: () => Navigator.push(
@@ -407,7 +452,7 @@ class _ProfileState extends State<Profile> {
               ),
               GestureDetector(
                 onTap: () {
-                  initPlatformState();
+                  getCurrentLocation();
                 },
                 child: Container(
                   height: 60,
@@ -435,7 +480,7 @@ class _ProfileState extends State<Profile> {
                       ),
                       Container(
                         child: Text(
-                          "$latitude, $longitude",
+                          _adress != null ? _adress : "Buscando endereço...",
                           style: const TextStyle(
                             fontSize: 12.0,
                             fontFamily: 'Poppins',
@@ -447,95 +492,11 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               Expanded(
-                child: Container(
-                  alignment: Alignment.bottomCenter,
-                  child: GestureDetector(
-                    child: Text(
-                      "Sair",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF00BFB2),
-                        fontSize: 14,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    onTap: () async {
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      await _auth.signOut().then(
-                            (onValue) => prefs.remove("range").then(
-                                  (onRemove) => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Initial(),
-                                    ),
-                                  ),
-                                ),
-                          );
-                    },
-                  ),
-                ),
+                child: Container(),
               ),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Container rangeValue(List<User> userData) {
-    return Container(
-      padding: EdgeInsets.all(15.0),
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Color(0xFFE8E8E8),
-            width: 1.0,
-          ),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Container(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    "Quero me deslocar:",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12.0,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                ),
-                Text(
-                  "${userRange.toInt().toString()}m",
-                  style: const TextStyle(
-                    color: Color(0xFF00BFB2),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Slider.adaptive(
-            activeColor: Color(0xFF00BFB2),
-            value: userRange != null ? userRange.toDouble() : 2500,
-            onChanged: (double range) {
-              setState(() {
-                updateRange(range.toInt());
-              });
-            },
-            min: 100,
-            max: 2500,
-            divisions: 48,
-            label: "${userRange.toInt().toString()}m",
-          ),
-        ],
       ),
     );
   }

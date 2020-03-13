@@ -83,39 +83,37 @@ class StoreListItem extends StatelessWidget {
                               ),
                             ],
                           ),
-                          Row(
-                            children: <Widget>[
-                              Container(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: <Widget>[
-                                    Opacity(
-                                      opacity: 0.3,
-                                      child: Image.asset(
-                                        "assets/icons/black/home.png",
-                                        width: 10.0,
-                                      ),
-                                    ),
-                                    Container(
-                                      width: 4.0,
-                                    ),
-                                    Container(
-                                      child: Text(
-                                        '$adress',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 12.0,
-                                          fontFamily: 'Quicksand',
-                                          color: Color(0xBB000000),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Opacity(
+                                  opacity: 0.3,
+                                  child: Image.asset(
+                                    "assets/icons/black/home.png",
+                                    width: 10.0,
+                                  ),
                                 ),
-                              ),
-                            ],
+                                Container(
+                                  width: 4.0,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    child: Text(
+                                      '$adress',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 12.0,
+                                        fontFamily: 'Quicksand',
+                                        color: Color(0xBB000000),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                           const Padding(padding: EdgeInsets.only(bottom: 3.0)),
                           Expanded(

@@ -186,14 +186,10 @@ class AuthenticationProvider {
     );
     await user.reauthenticateWithCredential(credential).then((onSignIn) {
       user.updatePassword(newPassword).then((onUpdate) {
-        print("FOI EM BITCHOU EHUHDUDS SIGNIN $onSignIn");
         return 1;
       }).catchError((onError) {
-        print(
-            "NEEEEEEM FOI OLOCO BITCHOU NEM FOI EM BITCHOU EHUHDUDS SIGNIN $onSignIn");
         return 0;
       });
-      print("M EHUHDUDS SIGNIN $onSignIn");
     });
   }
 

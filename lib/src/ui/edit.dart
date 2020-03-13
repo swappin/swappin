@@ -12,7 +12,7 @@ import 'package:swappin/src/ui/advanced.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
 import 'package:swappin/src/ui/profile.dart';
 import 'package:swappin/src/ui/widgets/edit-email.dart';
-import 'package:swappin/src/ui/widgets/no-stores.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
 import 'package:swappin/src/ui/widgets/swappin-icon.dart';
 import 'package:swappin/src/ui/widgets/swappin-input.dart';
@@ -113,7 +113,10 @@ class _EditProfileState extends State<EditProfile> {
                 if (userData.isNotEmpty) {
                   return editUserProfile(userData);
                 } else {
-                  return NoStoresScreen();
+                  return EmptyScreen(
+                    message: "Sentimos muito, mas algo de errado aconteceu!",
+                    image: "internet",
+                  );
                 }
               } else {
                 return LoaderScreen();

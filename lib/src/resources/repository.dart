@@ -107,6 +107,8 @@ class Repository {
     String storeAdress,
     String storePhoto,
     num storeScore,
+      double storeLatitude,
+      double storeLongitude,
     String code,
     List<dynamic> products,
     List<dynamic> prices,
@@ -121,6 +123,8 @@ class Repository {
           storeAdress,
           storePhoto,
           storeScore,
+          storeLatitude,
+          storeLongitude,
           code,
           products,
           prices,
@@ -191,6 +195,9 @@ class Repository {
 
   Stream<QuerySnapshot> getNotifications() =>
       _firestoreProvider.getNotifications();
+
+  Stream<QuerySnapshot> getOrderStatus(String code) =>
+      _firestoreProvider.getOrderStatus(code);
 
   Stream<QuerySnapshot> getStoreReview(String storeName) =>
       _firestoreProvider.getStoreReview(storeName);

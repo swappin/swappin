@@ -120,6 +120,8 @@ class FirestoreProvider {
     String storeAdress,
     String storePhoto,
     num storeScore,
+    double storeLatitude,
+    double storeLongitude,
     String code,
     List<dynamic> products,
     List<dynamic> prices,
@@ -141,6 +143,8 @@ class FirestoreProvider {
         'storeAdress': storeAdress,
         'storeScore': storeScore,
         'storePhoto': storePhoto,
+        'storeLatitude': storeLatitude,
+        'storeLongitude': storeLongitude,
         '_products': products,
         '_prices': prices,
         '_amounts': amounts,
@@ -326,6 +330,12 @@ class FirestoreProvider {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> getOrderStatus(String code) {
+    return _firestore
+        .collectionGroup('orders')
+        .where('code', isEqualTo: code)
+        .snapshots();
+  }
   Stream<QuerySnapshot> getStoreReview(String storeName) {
     return _firestore
         .collection('stores')

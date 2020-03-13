@@ -1,6 +1,8 @@
 import 'package:badges/badges.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:swappin/main.dart';
 import 'package:swappin/src/app.dart';
 import 'package:swappin/src/blocs/bag_bloc.dart';
 import 'package:swappin/src/blocs/bag_bloc_provider.dart';
@@ -13,7 +15,6 @@ import 'package:swappin/src/models/order.dart';
 import 'package:swappin/src/ui/bag.dart';
 import 'package:swappin/src/ui/search.dart';
 import 'package:swappin/src/ui/transformers/category-transformer.dart';
-import 'package:swappin/src/ui/map.dart';
 import 'package:swappin/src/ui/notifications.dart';
 import 'package:swappin/src/ui/profile.dart';
 
@@ -38,25 +39,42 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int currentIndex = 0;
   static List<String> userInitials = currentUserName.split(" ");
   String initialLetter = userInitials[0][0].toUpperCase();
-
+  String _adress;
+  TextEditingController _controller = TextEditingController();
   HomeState({this.currentIndex});
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _screenNavigator = <Widget>[
     categoryNavigator(),
-    MapScreen(),
     BagScreen(),
     NotificationScreen(),
   ];
 
+
+  Future<String> _getAddress() async {
+    List<Placemark> placemarks =
+    await Geolocator().placemarkFromCoordinates(latitude, longitude);
+    if (placemarks != null && placemarks.isNotEmpty) {
+      final Placemark pos = placemarks[0];
+      setState(() {
+        _adress = pos.thoroughfare;
+      });
+    }
+  }
+
   _bagCounter(int bagNumber) {
     if (bagNumber == 0) {
-      return Opacity(
+      return currentIndex == 1
+          ? Image.asset(
+        "assets/icons/gradient/bag.png",
+        width: 19.0,
+      )
+          : Opacity(
         opacity: 0.5,
         child: Image.asset(
           "assets/icons/black/bag.png",
-          width: 20.0,
+          width: 19.0,
         ),
       );
     } else {
@@ -71,24 +89,34 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
             fontFamily: 'Poppins',
           ),
         ),
-        child: Opacity(
-          opacity: 0.5,
-          child: Image.asset(
-            "assets/icons/black/bag.png",
-            width: 20.0,
-          ),
-        ),
+        child: currentIndex == 1
+            ? Image.asset(
+                "assets/icons/gradient/bag.png",
+                width: 19.0,
+              )
+            : Opacity(
+                opacity: 0.5,
+                child: Image.asset(
+                  "assets/icons/black/bag.png",
+                  width: 19.0,
+                ),
+              ),
       );
     }
   }
 
   _notificationCounter(int notificationNumber) {
     if (notificationNumber == 0) {
-      return Opacity(
+      return currentIndex == 2
+          ? Image.asset(
+        "assets/icons/gradient/clock.png",
+        width: 19.0,
+      )
+          : Opacity(
         opacity: 0.5,
         child: Image.asset(
           "assets/icons/black/clock.png",
-          width: 20.0,
+          width: 19.0,
         ),
       );
     } else {
@@ -103,13 +131,18 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
             fontFamily: 'Poppins',
           ),
         ),
-        child: Opacity(
-          opacity: 0.5,
-          child: Image.asset(
-            "assets/icons/black/clock.png",
-            width: 20.0,
-          ),
-        ),
+        child: currentIndex == 2
+            ? Image.asset(
+                "assets/icons/gradient/clock.png",
+                width: 19.0,
+              )
+            : Opacity(
+                opacity: 0.5,
+                child: Image.asset(
+                  "assets/icons/black/clock.png",
+                  width: 19.0,
+                ),
+              ),
       );
     }
   }
@@ -120,6 +153,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _userBloc = UserBlocProvider.of(context);
     _ordersBloc = OrdersBlocProvider.of(context);
     _bagBloc = BagBlocProvider.of(context);
+    _getAddress();
   }
 
   @override
@@ -150,8 +184,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         onPressed: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                Profile(),
+                            builder: (context) => Profile(),
                           ),
                         ),
                         child: Stack(
@@ -180,8 +213,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                     width: 46,
                                     height: 46,
                                     decoration: BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(54),
+                                      borderRadius: BorderRadius.circular(54),
                                       border: Border.all(
                                           color: Colors.white, width: 2),
                                       image: DecorationImage(
@@ -224,24 +256,52 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Container(
-                              child: Text(
-                                "Bem-vindo à Swappin",
-                                style: const TextStyle(
-                                  fontSize: 12.0,
-                                  fontFamily: 'Quicksand',
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+//                              child: Text(
+//                                "Bem-vindo à Swappin",
+//                                style: const TextStyle(
+//                                  fontSize: 10,
+//                                  fontFamily: 'Quicksand',
+//                                  color: Colors.black,
+//                                ),
+//                              ),
                             Text(
                               currentUserName,
                               style: TextStyle(
-                                fontSize: 15.0,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Poppins',
                                 color: Color(0xFF00BFB2),
                               ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Opacity(
+                                  opacity: 0.5,
+                                  child: Image.asset(
+                                    "assets/icons/black/pin_rounded_circle.png",
+                                    width: 8,
+                                  ),
+                                ),
+                                Container(
+                                  width: 4.0,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    child: Text(
+                                      _adress != null ? _adress : "Buscando endereço...",
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 12.0,
+                                        fontFamily: 'Quicksand',
+                                        color: Color(0xBB000000),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -252,66 +312,94 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
             )
           : null,
-      body: Center(
-        child: _screenNavigator.elementAt(currentIndex),
+      body:
+
+
+      Column(
+        children: <Widget>[
+          currentIndex == 0 ? Container(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            margin: EdgeInsets.symmetric(vertical: 15),
+            child: Container(
+              height: 48,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(50.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x11135252),
+                      blurRadius: 15,
+                      spreadRadius: 0,
+                      offset: Offset(
+                        0.0,
+                        0.0,
+                      ),
+                    )
+                  ],
+                  border: Border.all(
+                    color: Color(0xFFE5E9E9),
+                    width: 1,
+                  )),
+              padding: EdgeInsets.fromLTRB(20, 0, 5, 0),
+              child: TextField(
+                controller: _controller,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                SearchScreen(filter: _controller.text),
+                          ));
+                    },
+                    icon: Opacity(
+                      opacity: 0.65,
+                      child: Image.asset(
+                        "assets/icons/black/search.png",
+                        width: 16,
+                      ),
+                    ),
+                  ),
+                  hintText: "Qual produto deseja?",
+                  border: InputBorder.none,
+                ),
+                cursorColor: Color(0xFF00BFB2),
+                style: TextStyle(
+                  color: Color(0xFF00BFB2),
+                ),
+                cursorWidth: 3.0,
+              ),
+            ),
+          ) : Container(),
+          Expanded(child:
+          Center(
+            child: _screenNavigator.elementAt(currentIndex),
+          ),),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: (index) => setState(() {
           currentIndex = index;
+          print(currentIndex);
         }),
         elevation: 0.0,
         items: [
           BottomNavigationBarItem(
-            icon: Opacity(
-              opacity: 0.5,
-              child: Image.asset(
-                "assets/icons/black/home.png",
-                width: 19.0,
-              ),
-            ),
-            activeIcon: Opacity(
-              opacity: 1.0,
-              child: Image.asset(
-                "assets/icons/gradient/home.png",
-                width: 19.0,
-              ),
-            ),
-            title: Text(
-              'Home',
-              style: TextStyle(
-                fontSize: 12.0,
-                fontFamily: 'Poppins',
-              ),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.only(bottom: 4.0),
-              child: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  "assets/icons/black/pin_sharp_circle.png",
-                  width: 16.0,
-                ),
-              ),
-            ),
-            activeIcon: Padding(
-              padding: EdgeInsets.only(bottom: 4.0),
-              child: Opacity(
-                opacity: 1.0,
-                child: Image.asset(
-                  "assets/icons/gradient/pin.png",
-                  width: 17.0,
-                ),
-              ),
-            ),
-            title: Text(
-              'Mapa',
-              style: TextStyle(
-                fontSize: 12.0,
-                fontFamily: 'Poppins',
-              ),
-            ),
+            icon: currentIndex == 0
+                ? Image.asset(
+                    "assets/icons/gradient/home.png",
+                    width: 19.0,
+                  )
+                : Opacity(
+                    opacity: 0.5,
+                    child: Image.asset(
+                      "assets/icons/black/home.png",
+                      width: 19.0,
+                    ),
+                  ),
+            title: Container(),
           ),
           BottomNavigationBarItem(
             icon: StreamBuilder(
@@ -335,16 +423,10 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
               },
             ),
             activeIcon: Image.asset(
-              "assets/icons/gradient/bag.png",
+              "assets/icons/gradient/home.png",
               width: 20.0,
             ),
-            title: Text(
-              "Sacola",
-              style: TextStyle(
-                fontSize: 12.0,
-                fontFamily: 'Poppins',
-              ),
-            ),
+            title: Container(),
           ),
           BottomNavigationBarItem(
             icon: StreamBuilder(
@@ -367,17 +449,7 @@ class HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 }
               },
             ),
-            activeIcon: Image.asset(
-              "assets/icons/gradient/clock.png",
-              width: 20.0,
-            ),
-            title: Text(
-              "Notificações",
-              style: TextStyle(
-                fontSize: 12.0,
-                fontFamily: 'Poppins',
-              ),
-            ),
+            title: Container(),
           ),
         ],
       ),

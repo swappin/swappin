@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:swappin/src/app.dart';
 import 'package:swappin/src/ui/login.dart';
 import 'package:swappin/src/ui/register.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
@@ -73,7 +74,7 @@ class _InitialState extends State<Initial> {
                 onPressed: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RegisterScreen(),
+                    builder: (context) => RegisterScreen(uid: currentUserUID,),
                   ),
                 ),
                 child: Text(

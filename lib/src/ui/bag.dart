@@ -10,29 +10,14 @@ import 'package:swappin/src/models/bag.dart';
 import 'package:swappin/src/ui/home.dart';
 import 'package:swappin/src/ui/payment.dart';
 import 'package:swappin/src/ui/products.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
 import 'package:swappin/src/ui/widgets/swappin-button.dart';
 import 'package:swappin/src/ui/widgets/score-stars.dart';
 
 class BagScreen extends StatefulWidget {
-  final String paymentMethod;
-  final String paymentThumbnail;
-  final String paymentChange;
-
-  const BagScreen({
-    Key key,
-    @required this.paymentMethod,
-    this.paymentThumbnail,
-    this.paymentChange,
-  }) : super(key: key);
-
   @override
   _BagScreenState createState() => _BagScreenState(
-        paymentMethod: this.paymentMethod,
-        paymentThumbnail: this.paymentThumbnail,
-        paymentChange: this.paymentChange,
       );
 }
 
@@ -44,6 +29,8 @@ class _BagScreenState extends State<BagScreen> {
   String currentStoreAdress;
   String currentStorePhoto;
   num currentStoreScore;
+  double storeLatitude;
+  double storeLongitude;
   List<String> productList = List();
   List<int> amountList = List();
   List<double> priceList = List();
@@ -56,12 +43,6 @@ class _BagScreenState extends State<BagScreen> {
   String paymentChange;
   ScrollPhysics physics = ScrollPhysics();
   num amount = 1;
-
-  _BagScreenState({
-    this.paymentMethod,
-    this.paymentThumbnail,
-    this.paymentChange,
-  });
 
   verifyAmount(int amount) {
     if (amount <= 1) {
@@ -98,7 +79,9 @@ class _BagScreenState extends State<BagScreen> {
     orderList.asMap().forEach((index, data) {
       priceList.add(data['price']);
     });
-    return priceList.reduce((a, b) => a + b);
+    if(priceList.isNotEmpty){
+      return priceList.reduce((a, b) => a + b);
+    }
   }
 
   getStringValuesSF() async {
@@ -107,6 +90,23 @@ class _BagScreenState extends State<BagScreen> {
     currentStorePhoto = prefs.getString('storePhoto');
     currentStoreAdress = prefs.getString('storeAdress');
     currentStoreScore = prefs.getDouble('storeScore');
+    paymentMethod = prefs.getString('paymentMethod');
+    paymentThumbnail = prefs.getString('paymentThumbnail');
+    paymentChange = prefs.getString('paymentChange');
+    storeLatitude = prefs.getDouble('storeLatitude');
+    storeLongitude = prefs.getDouble('storeLongitude');
+  }
+
+  removeStringValuesSF() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.remove('storeName');
+    await prefs.remove('storePhoto');
+    await prefs.remove('storeAdress');
+    await prefs.remove('storeScore');
+    await prefs.remove('paymentMethod');
+    await prefs.remove('paymentThumbnail');
+    await prefs.remove('paymentChange');
   }
 
   @override
@@ -169,7 +169,10 @@ class _BagScreenState extends State<BagScreen> {
               if (bagListItens.isNotEmpty) {
                 return productsList(bagListItens);
               } else {
-                return NoProductsScreen();
+                return EmptyScreen(
+                    message: "Eita, sua sacaola está vazia!\nBora fazer umas comprinhas?",
+                  image: "products",
+                );
               }
             } else {
               return LoaderScreen();
@@ -249,6 +252,8 @@ class _BagScreenState extends State<BagScreen> {
                                 adress: currentStoreAdress,
                                 photo: currentStorePhoto,
                                 score: currentStoreScore,
+                                storeLatitude: storeLatitude,
+                                storeLongitude: storeLongitude,
                               ),
                             ),
                           ),
@@ -570,7 +575,7 @@ class _BagScreenState extends State<BagScreen> {
                                             PaymentScreen(total: total),
                                       ));
                                 },
-                                trailing: Image.network(
+                                trailing: Image.asset(
                                   paymentThumbnail,
                                   width: 40.0,
                                 ),
@@ -672,14 +677,17 @@ class _BagScreenState extends State<BagScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => Home(currentIndex: 3),
+                                    builder: (context) => Home(currentIndex: 2),
                                   ),
                                 );
+
                                 _ordersBloc.orderProducts(
                                   currentStoreName,
                                   currentStoreAdress,
                                   currentStorePhoto,
                                   currentStoreScore,
+                                  storeLatitude,
+                                  storeLongitude,
                                   code,
                                   productList,
                                   totalList,
@@ -693,6 +701,7 @@ class _BagScreenState extends State<BagScreen> {
                                   _bloc.removeBagItem(currentUserEmail,
                                       productsList[index].code);
                                 });
+                                removeStringValuesSF();
                               },
                               child: Text(
                                 "Finalizar Pedido",
@@ -958,6 +967,7 @@ class _BagScreenState extends State<BagScreen> {
                       total = totalList.reduce((a, b) => a + b);
                     });
                     _bloc.removeBagItem(currentUserEmail, code);
+                    removeStringValuesSF();
                     Navigator.of(context).pop();
                   },
                 ),

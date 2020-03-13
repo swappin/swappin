@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:swappin/src/app.dart';
 import 'package:swappin/src/models/bag.dart';
 import 'package:swappin/src/resources/repository.dart';
 

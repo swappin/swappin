@@ -3,6 +3,8 @@ class Order {
   final String _storeAdress;
   final String _storePhoto;
   final num _storeScore;
+  final double _storeLatitude;
+  final double _storeLongitude;
   final String _status;
   final String _code;
   final String _photo;
@@ -20,6 +22,8 @@ class Order {
     this._storeAdress,
     this._storePhoto,
     this._storeScore,
+    this._storeLatitude,
+    this._storeLongitude,
     this._status,
     this._code,
     this._photo,
@@ -40,6 +44,10 @@ class Order {
   String get storePhoto => _storePhoto;
 
   num get storeScore => _storeScore;
+
+  double get storeLatitude => _storeLatitude;
+
+  double get storeLongitude => _storeLongitude;
 
   String get status => _status;
 

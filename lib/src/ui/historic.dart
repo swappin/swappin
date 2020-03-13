@@ -4,10 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:swappin/src/blocs/orders_bloc.dart';
 import 'package:swappin/src/blocs/orders_bloc_provider.dart';
 import 'package:swappin/src/models/order.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
+import 'package:swappin/src/ui/widgets/empty.dart';
 import 'package:swappin/src/ui/widgets/historic-item.dart';
 import 'package:swappin/src/ui/animations/loader.dart';
-import 'package:swappin/src/ui/widgets/no-products.dart';
 
 class HistoricScreen extends StatefulWidget {
   @override
@@ -89,7 +88,10 @@ class _HistoricScreenState extends State<HistoricScreen> {
                     .sort((b, a) => a.finalDate.compareTo(b.finalDate));
                 return buildList(statusListener);
               } else {
-                return NoProductsScreen();
+                return EmptyScreen(
+                  message: "Ooops, parece que você nunca comprou nada!\nbora fazer a primeira comprinha?",
+                  image: "products",
+                );
               }
             } else {
               return LoaderScreen();
